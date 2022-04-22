@@ -446,7 +446,7 @@ map1 <- map %>%
                    overlayGroups = c(#"Underlay", 'Labels_F', 'Labels_Y', 'Labels_K', 
                                      'Illumina'),
                    options = layersControlOptions(collapsed = T))
-#map1
+map1
 
 HMHZ <- read.csv("https://raw.githubusercontent.com/tlobnow/Cryptosporidium-BSc/Main-Branch/Analysis/HMHZ_Samples_Locations.csv", na.strings=c(""," ","NA")) %>% filter(!is.na(Longitude)) %>% select(-X)
 
