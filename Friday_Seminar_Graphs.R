@@ -241,6 +241,8 @@ library(RColorBrewer) #display.brewer.all()
 library(leaflet)
 library(htmltools)
 
+SOTA <- read.csv('https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/SOTA_Data_Product.csv') %>% filter(!is.na(HI))
+
 High_Infection_Samples <- SOTA %>% 
   select(Mouse_ID, ILWE_Crypto_Ct, Oocyst_Predict_Crypto, Year, Latitude, Longitude, HI, Sex) %>% 
   filter(ILWE_Crypto_Ct > 0, Year >= 2016) %>% 
@@ -432,7 +434,7 @@ map1 <- map %>%
                    group = 'Illumina') %>%
   addLegend("bottomleft", 
             pal = data_col_HI_Level, 
-            title = "HI",
+            title = "Hybrid Index",
             values = SOTA$HI_Level, 
             group = c('HI = 0.00', 'HI < 0.25', 'HI < 0.50', 'HI < 0.75', 'HI < 1.00', 'HI = 1.00'),
             opacity = 1) %>%
@@ -446,7 +448,7 @@ map1 <- map %>%
                    overlayGroups = c(#"Underlay", 'Labels_F', 'Labels_Y', 'Labels_K', 
                                      'Illumina'),
                    options = layersControlOptions(collapsed = T))
-map1
+#map1
 
 HMHZ <- read.csv("https://raw.githubusercontent.com/tlobnow/Cryptosporidium-BSc/Main-Branch/Analysis/HMHZ_Samples_Locations.csv", na.strings=c(""," ","NA")) %>% filter(!is.na(Longitude)) %>% select(-X)
 
@@ -482,20 +484,11 @@ map <- Clades %>%
 map2 <- map %>%
   addPolylines(lat = c(55.0000, 53.6000, 53.51885, 52.8875, 52.6053, 51.8978, 50.08506775 , 48.13659738768638, 45.0000), lng = c(10.0000, 11.4563, 12.4464,13.8119 , 13.8756, 13.8103, 12.5988909, 11.582597486663213, 11.50000), color = "purple", weight = 75, opacity = 0.1)  %>%
   addCircleMarkers(data = HMHZ, 
-                   col = ~data_col_HI(HI),
+                   col = ~data_col_HI_HMHZ(HI),
                    label = ~htmlEscape(Mouse_ID),
                    popup = ~paste("<b>Mouse_ID:<b>",as.character(Mouse_ID), "<br>",
                                   "<b>HI:<b>",      as.character(HI), "<br>",
                                   "<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude), "<br>",
-                                  "<b>GP60 Subtype:<b>",      as.character(GP60_Subtype), "<br>",
-                                  "<b>MSC6-7 Subtype:<b>",      as.character(MSC6_Subtype), "<br>",
-                                  "<b>GST Subtype:<b>",      as.character(GST_Subtype), "<br>",
-                                  "<b>CP56 Subtype:<b>",      as.character(CP56_Subtype), "<br>",
-                                  "<b>SKSR Subtype:<b>",      as.character(SKSR_Subtype), "<br>",
-                                  "<b>MEDLE Subtype:<b>",      as.character(MEDLE_Subtype), "<br>",
-                                  "<b>Actin Subtype:<b>",      as.character(Actin_Subtype), "<br>",
-                                  "<b>TRAP-C1 Subtype:<b>",    as.character(TRAP_C1_Subtype), "<br>",
-                                  "<b>COWP Subtype:<b>",      as.character(COWP_Subtype), "<br>",
                                   sep=" "),
                    opacity = 0.1,
                    radius = 10,
@@ -578,7 +571,7 @@ map2 <- map %>%
                    group = '3 .. West BR') %>%
   addLegend("bottomleft", 
             pal = data_col_HI_Level, 
-            title = "HI",
+            title = "Hybrid Index",
             values = SOTA$HI_Level, 
             group = c('HI = 0.00', 'HI < 0.25', 'HI < 0.50', 'HI < 0.75', 'HI < 1.00', 'HI = 1.00'),
             opacity = 1) %>%
