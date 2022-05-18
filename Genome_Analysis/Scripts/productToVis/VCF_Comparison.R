@@ -56,6 +56,15 @@ genesub900 <- AA_0900 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, n) %>%
 genesub942 <- AA_0942 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, n) %>% distinct(GeneID, n)
 genesubIXa <-     IXa %>% filter(GeneID != '.') %>% dplyr::select(GeneID, n) %>% distinct(GeneID, n)
 
+setnames(genesub866, old = c("n"), new = c("n.866"), skip_absent = T)
+setnames(genesub900, old = c("n"), new = c("n.900"), skip_absent = T)
+setnames(genesub942, old = c("n"), new = c("n.942"), skip_absent = T)
+setnames(genesubIXa, old = c("n"), new = c("n.IXa"), skip_absent = T)
+
+divGenes <- full_join(genesub866, genesub900)
+divGenes <- full_join(divGenes, genesub942)
+divGenes <- full_join(divGenes, genesubIXa)
+
 
 
 
