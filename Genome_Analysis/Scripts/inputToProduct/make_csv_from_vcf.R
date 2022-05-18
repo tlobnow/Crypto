@@ -35,22 +35,20 @@ makeVcfToCsv <- function(x){
   colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@fixed@listData[["QUAL"]]'] <- 'QUAL'
 }
 
-# set the working directory
-setwd(dir = "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/")
 
 # IXa
-makeVcfToCsv("IXa_annotated.vcf")
+makeVcfToCsv("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/InputFiles/IXa_annotated.vcf")
 CollapsedVCF$chr[CollapsedVCF$chr %in% c("PYHZ01000001.1", "PYHZ01000002.1", "PYHZ01000003.1", "PYHZ01000004.1", "PYHZ01000005.1", "PYHZ01000006.1", "PYHZ01000007.1", "PYHZ01000008.1", "PYHZ01000009.1", "PYHZ01000010.1", "PYHZ01000011.1")] <- c("Ctyz_1", "Ctyz_2", "Ctyz_3", "Ctyz_4", "Ctyz_5", "Ctyz_6", "Ctyz_7", "Ctyz_8", "Ctyz_00_1", "Ctyz_00_2", "Ctyz_00_3")
-write.csv(CollapsedVCF, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/Ctyz_IXa.csv")
+write.csv(CollapsedVCF, "~/Genome_Analysis/Products/Ctyz_IXa.csv")
 
 # AA_0866
-makeVcfToCsv("866_annotated.vcf")
-write.csv(CollapsedVCF, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/Ctyz_AA_0866.csv")
+makeVcfToCsv("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/InputFiles/866_annotated.vcf")
+write.csv(CollapsedVCF, "~/Genome_Analysis/Products/Ctyz_AA_0866.csv")
 
 # AA_0900
-makeVcfToCsv("900_annotated.vcf")
-write.csv(CollapsedVCF, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/Ctyz_AA_0900.csv")
+makeVcfToCsv("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/InputFiles/900_annotated.vcf")
+write.csv(CollapsedVCF, "~/Genome_Analysis/Products/Ctyz_AA_0900.csv")
 
 # AA_0942
-makeVcfToCsv("942_annotated.vcf")
-write.csv(CollapsedVCF, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/Ctyz_AA_0942.csv")
+makeVcfToCsv("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/InputFiles/942_annotated.vcf")
+write.csv(CollapsedVCF, "~/Genome_Analysis/Products/Ctyz_AA_0942.csv")
