@@ -6,13 +6,11 @@ library(VariantAnnotation)
 # set the working directory
 setwd(dir = "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/")
 
-
-
 ## Input = annotated VCF file
 #CollapsedVCF <- readVcf("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/IXa_annotated.vcf")
 #CollapsedVCF <- readVcf("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/866_annotated.vcf")
 #CollapsedVCF <- readVcf("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/900_annotated.vcf")
-CollapsedVCF <- readVcf("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/942_annotated.vcf")
+#CollapsedVCF <- readVcf("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/942_annotated.vcf")
 
 # Extract interesting data
 AminoAcidChange <- as.data.frame(CollapsedVCF@info@listData[["AminoAcidChange"]])
@@ -26,7 +24,6 @@ START           <- as.data.frame(CollapsedVCF@rowRanges@ranges@start)
 WIDTH           <- as.data.frame(CollapsedVCF@rowRanges@ranges@width)
 QUAL            <- as.data.frame(CollapsedVCF@fixed@listData[["QUAL"]])
 
-
 # separate the NAMES column
 NAME <- setDT(NAME)[, paste0("CollapsedVCF@rowRanges@ranges@NAMES", 1:2) := tstrsplit(CollapsedVCF@rowRanges@ranges@NAMES, ":")]
 setnames(NAME, old = c("CollapsedVCF@rowRanges@ranges@NAMES1", "CollapsedVCF@rowRanges@ranges@NAMES2"), new = c("Chr", "Pos.REFALT"), skip_absent = T)
@@ -37,9 +34,7 @@ NAME <- NAME %>% dplyr::select(Chr, Pos, REF.ALT)
 AminoAcidChange <- AminoAcidChange %>% dplyr::select(value)
 
 # combine the vectors
-CollapsedVCF <- cbind(Locus, Product, ProteinID, VariantType, FeatureType, NAME, 
-                      #RefCodon, AltCodon, 
-                      AminoAcidChange, START, WIDTH, QUAL)
+CollapsedVCF <- cbind(Locus, Product, ProteinID, VariantType, FeatureType, NAME, AminoAcidChange, START, WIDTH, QUAL)
 
 # change column names
 colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["LocusTag"]]@unlistData'] <- 'GeneID'
@@ -69,7 +64,7 @@ CollapsedVCF$Chr <- gsub(pattern = "PYHZ01000011.1", replacement = "Ctyz_00_3", 
 #write.csv(CollapsedVCF, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/Ctyz_IXa.csv")
 #write.csv(CollapsedVCF, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/Ctyz_AA_0866.csv")
 #write.csv(CollapsedVCF, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/Ctyz_AA_0900.csv")
-write.csv(CollapsedVCF, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/Ctyz_AA_0942.csv")
+#write.csv(CollapsedVCF, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/Ctyz_AA_0942.csv")
 
 
 
@@ -135,8 +130,6 @@ divGenes <- cbind(divGenes, StDev)
 # round meanDiv and sd
 divGenes$meanDiv <- round(divGenes$meanDiv, digits = 2)
 divGenes$StDev <- round(divGenes$StDev, digits = 2)
-
-
 
 # write csv file
 write.csv(divGenes, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/divGenes.csv")
