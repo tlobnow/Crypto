@@ -1,0 +1,43 @@
+{
+"apiVersion": "V1",
+"assemblies": [
+{
+  "files": [
+    {
+      "filePath": "assembly_data_report.jsonl",
+      "fileType": "DATA_REPORT"
+    }
+  ]
+},{
+  "accession": "GCA_007210665.1",
+  "files": [
+    {
+      "filePath": "GCA_007210665.1/GCA_007210665.1_Ctyz_UGA_55_genomic.fna",
+      "fileType": "GENOMIC_NUCLEOTIDE_FASTA"
+    },
+    {
+      "filePath": "GCA_007210665.1/cds_from_genomic.fna",
+      "fileType": "CDS_NUCLEOTIDE_FASTA"
+    },
+    {
+      "filePath": "GCA_007210665.1/genomic.gbff",
+      "fileType": "GENBANK_FLAT_FILE"
+    },
+    {
+      "filePath": "GCA_007210665.1/genomic.gff",
+      "fileType": "GFF3"
+    },
+    {
+      "filePath": "GCA_007210665.1/genomic.gtf",
+      "fileType": "GTF"
+    },
+    {
+      "filePath": "GCA_007210665.1/protein.faa",
+      "fileType": "PROTEIN_FASTA"
+    },
+    {
+      "filePath": "GCA_007210665.1/sequence_report.jsonl",
+      "fileType": "SEQUENCE_REPORT"
+    }
+  ]
+}]}
