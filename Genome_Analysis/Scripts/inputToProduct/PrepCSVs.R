@@ -132,5 +132,5 @@ divGenes$meanDiv <- round(divGenes$meanDiv, digits = 2)
 divGenes$StDev <- round(divGenes$StDev, digits = 2)
 
 # write csv file
-write.csv(divGenes, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/divGenes.csv")
+write.csv(divGenes, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/DivGenes.csv")
 
