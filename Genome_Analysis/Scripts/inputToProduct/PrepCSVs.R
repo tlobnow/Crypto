@@ -15,10 +15,6 @@ setwd(dir = "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/")
 CollapsedVCF <- readVcf("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/942_annotated.vcf")
 
 # Extract interesting data
-#RefCodon        <- as.data.frame(CollapsedVCF@info@listData[["RefCodon"]]@unlistData)
-#AltCodon        <- as.data.frame(CollapsedVCF@info@listData[["AltCodon"]]@unlistData)
-#RefAminoAcid    <- as.data.frame(CollapsedVCF@info@listData[["RefAminoAcid"]]@unlistData)
-#AltAminoAcid    <- as.data.frame(CollapsedVCF@info@listData[["AltAminoAcid"]]@unlistData)
 AminoAcidChange <- as.data.frame(CollapsedVCF@info@listData[["AminoAcidChange"]])
 Locus           <- as.data.frame(CollapsedVCF@info@listData[["LocusTag"]]@unlistData)
 Product         <- as.data.frame(CollapsedVCF@info@listData[["Product"]]@unlistData)
@@ -51,10 +47,6 @@ colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[[
 colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["VariantType"]]@unlistData'] <- 'VariantType'
 colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["FeatureType"]]@unlistData'] <- 'FeatureType'
 colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["Product"]]@unlistData'] <- 'Product'
-#colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["RefCodon"]]@unlistData'] <- 'RefCodon'
-#colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["AltCodon"]]@unlistData'] <- 'AltCodon'
-#colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["RefAminoAcid"]]@unlistData'] <- 'RefAminoAcid'
-#colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["AltAminoAcid"]]@unlistData'] <- 'AltAminoAcid'
 colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'value'] <- 'AminoAcidChange'
 colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@rowRanges@ranges@start'] <- 'START'
 colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@rowRanges@ranges@width'] <- 'WIDTH'
@@ -80,4 +72,72 @@ CollapsedVCF$Chr <- gsub(pattern = "PYHZ01000011.1", replacement = "Ctyz_00_3", 
 write.csv(CollapsedVCF, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/Ctyz_AA_0942.csv")
 
 
+
+
+
+
+
+################################################################################################################################################################
+################################################################################################################################################################
+
+# read the csv files
+AA_0866 <- read.csv("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/Products/Ctyz_AA_0866.csv")
+AA_0900 <- read.csv("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/Products/Ctyz_AA_0900.csv")
+AA_0942 <- read.csv("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/Products/Ctyz_AA_0942.csv")
+IXa     <- read.csv("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/Products/Ctyz_IXa.csv")
+
+# calculate variants per GeneID
+pull_AA_0866 <- AA_0866 %>% filter(GeneID != ".") %>% group_by(GeneID) %>% dplyr::count(GeneID)
+AA_0866 <- left_join(AA_0866, pull_AA_0866, by = 'GeneID')
+
+# calculate variants per GeneID
+pull_AA_0900 <- AA_0900 %>% filter(GeneID != ".") %>% group_by(GeneID) %>% dplyr::count(GeneID)
+AA_0900 <- left_join(AA_0900, pull_AA_0900, by = 'GeneID')
+
+# calculate variants per GeneID
+pull_AA_0942 <- AA_0942 %>% filter(GeneID != ".") %>% group_by(GeneID) %>% dplyr::count(GeneID)
+AA_0942 <- left_join(AA_0942, pull_AA_0942, by = 'GeneID')
+
+# calculate variants per GeneID
+pull_IXa <- IXa %>% filter(GeneID != ".") %>% group_by(GeneID) %>% dplyr::count(GeneID)
+IXa <- left_join(IXa, pull_IXa, by = 'GeneID')
+
+rm(pull_IXa, pull_AA_0866, pull_AA_0900, pull_AA_0942)
+
+
+################################################################################
+################################################################################
+#### Make a csv file that contains the most divergent genes (n=?)
+
+genesub866 <- AA_0866 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, n) %>% distinct(GeneID, Chr, n)
+genesub900 <- AA_0900 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, n) %>% distinct(GeneID, Chr, n)
+genesub942 <- AA_0942 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, n) %>% distinct(GeneID, Chr, n)
+genesubIXa <-     IXa %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, n) %>% distinct(GeneID, Chr, n)
+
+setnames(genesub866, old = c("n"), new = c("n.866"), skip_absent = T)
+setnames(genesub942, old = c("n"), new = c("n.942"), skip_absent = T)
+setnames(genesub900, old = c("n"), new = c("n.900"), skip_absent = T)
+setnames(genesubIXa, old = c("n"), new = c("n.IXa"), skip_absent = T)
+
+divGenes <- full_join(genesub866, genesub942)
+divGenes <- full_join(divGenes, genesub900)
+divGenes <- full_join(divGenes, genesubIXa)
+
+# add mean Diversity column (without NAs)
+meanDiv <- divGenes %>% dplyr::select(n.866, n.942, n.900, n.IXa) %>% rowMeans(na.rm=TRUE)
+divGenes <- cbind(divGenes, meanDiv)
+
+# add Standard Deviation for difference between samples (without NAs)
+StDev <- divGenes %>% dplyr::select(n.866, n.942, n.900, n.IXa) 
+StDev <- apply(StDev, 1, sd, na.rm = TRUE)
+divGenes <- cbind(divGenes, StDev)
+
+# round meanDiv and sd
+divGenes$meanDiv <- round(divGenes$meanDiv, digits = 2)
+divGenes$StDev <- round(divGenes$StDev, digits = 2)
+
+
+
+# write csv file
+write.csv(divGenes, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/divGenes.csv")
 
