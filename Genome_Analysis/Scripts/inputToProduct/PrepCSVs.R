@@ -118,19 +118,111 @@ divGenes <- full_join(genesub866, genesub942)
 divGenes <- full_join(divGenes, genesub900)
 divGenes <- full_join(divGenes, genesubIXa)
 
+
+################################################################################
+
+ct_AA_0866 <- AA_0866 %>% group_by(GeneID, Chr, FeatureType) %>% dplyr::count(VariantType)
+ct_AA_0942 <- AA_0942 %>% group_by(GeneID, Chr, FeatureType) %>% dplyr::count(VariantType)
+ct_AA_0900 <- AA_0900 %>% group_by(GeneID, Chr, FeatureType) %>% dplyr::count(VariantType)
+ct_IXa     <-     IXa %>% group_by(GeneID, Chr, FeatureType) %>% dplyr::count(VariantType)
+
+setnames(ct_AA_0866, old = c("VariantType", "n"), new = c("VariantType", "Variants.866"), skip_absent = T)
+setnames(ct_AA_0942, old = c("VariantType", "n"), new = c("VariantType", "Variants.942"), skip_absent = T)
+setnames(ct_AA_0900, old = c("VariantType", "n"), new = c("VariantType", "Variants.900"), skip_absent = T)
+setnames(ct_IXa,     old = c("VariantType", "n"), new = c("VariantType", "Variants.IXa"), skip_absent = T)
+
+divGenes2 <- full_join(ct_AA_0866, ct_AA_0942)
+divGenes2 <- full_join(divGenes2, ct_AA_0900)
+divGenes2 <- full_join(divGenes2, ct_IXa)
+
+
+divGenes3 <- full_join(divGenes, divGenes2)
+
+
+### SUBSET ALL SNPs
+sub_SNP <- divGenes3 %>% filter(VariantType == "SNP")
+colnames(sub_SNP)[colnames(sub_SNP)%in%"Variants.866"] <- "SNPs.866"
+colnames(sub_SNP)[colnames(sub_SNP)%in%"Variants.942"] <- "SNPs.942"
+colnames(sub_SNP)[colnames(sub_SNP)%in%"Variants.900"] <- "SNPs.900"
+colnames(sub_SNP)[colnames(sub_SNP)%in%"Variants.IXa"] <- "SNPs.IXa"
+
+
+### SUBSET AMBIGUOUS SNPs
+sub_AmbigSNP <- divGenes3 %>% filter(VariantType == "Ambiguous_SNP")
+colnames(sub_AmbigSNP)[colnames(sub_AmbigSNP)%in%"Variants.866"] <- "AmSNPs.866"
+colnames(sub_AmbigSNP)[colnames(sub_AmbigSNP)%in%"Variants.942"] <- "AmSNPs.942"
+colnames(sub_AmbigSNP)[colnames(sub_AmbigSNP)%in%"Variants.900"] <- "AmSNPs.900"
+colnames(sub_AmbigSNP)[colnames(sub_AmbigSNP)%in%"Variants.IXa"] <- "AmSNPs.IXa"
+
+### SUBSET ALL INSERTIONS
+sub_INS <- divGenes3 %>% filter(VariantType == "Insertion")
+colnames(sub_INS)[colnames(sub_INS)%in%"Variants.866"] <- "INS.866"
+colnames(sub_INS)[colnames(sub_INS)%in%"Variants.942"] <- "INS.942"
+colnames(sub_INS)[colnames(sub_INS)%in%"Variants.900"] <- "INS.900"
+colnames(sub_INS)[colnames(sub_INS)%in%"Variants.IXa"] <- "INS.IXa"
+
+
+### SUBSET ALL DELETIONS
+sub_DEL <- divGenes3 %>% filter(VariantType == "Deletion")
+colnames(sub_DEL)[colnames(sub_DEL)%in%"Variants.866"] <- "DEL.866"
+colnames(sub_DEL)[colnames(sub_DEL)%in%"Variants.942"] <- "DEL.942"
+colnames(sub_DEL)[colnames(sub_DEL)%in%"Variants.900"] <- "DEL.900"
+colnames(sub_DEL)[colnames(sub_DEL)%in%"Variants.IXa"] <- "DEL.IXa"
+
+### JOIN THE SUBSETS INTO THE FINISHED TABLE
+divGenes4 <- full_join(sub_SNP, sub_AmbigSNP)
+divGenes4 <- full_join(divGenes4, sub_INS)
+divGenes4 <- full_join(divGenes4, sub_DEL)
+divGenes4 <- divGenes4 %>% select(-VariantType)
+
+
+divGenes4 <- divGenes4 %>% 
+  filter(GeneID != ".") %>%
+  arrange(GeneID) %>% 
+  group_by(GeneID) %>% 
+  fill(c(everything()), .direction = "downup") %>% 
+  ungroup() %>% 
+  distinct(GeneID, .keep_all = T)
+
+colnames(divGenes4)[colnames(divGenes4)%in%"n.866"] <- "ChangesSum.866"
+colnames(divGenes4)[colnames(divGenes4)%in%"n.942"] <- "ChangesSum.942"
+colnames(divGenes4)[colnames(divGenes4)%in%"n.900"] <- "ChangesSum.900"
+colnames(divGenes4)[colnames(divGenes4)%in%"n.IXa"] <- "ChangesSum.IXa"
+
+# add Product Column
+Product <- AA_0866 %>% filter(GeneID != ".") %>% select(GeneID, Product) %>% arrange(GeneID) %>% group_by(GeneID) %>% fill(c(everything()), .direction = "downup") %>% ungroup() %>% distinct(GeneID, .keep_all = T)
+divGenes4 <- full_join(divGenes4, Product)
+
+
 # add mean Diversity column (without NAs)
-meanDiv <- divGenes %>% dplyr::select(n.866, n.942, n.900, n.IXa) %>% rowMeans(na.rm=TRUE)
-divGenes <- cbind(divGenes, meanDiv)
+meanDiversity <- divGenes4 %>% dplyr::select(ChangesSum.866, ChangesSum.942, ChangesSum.900, ChangesSum.IXa) %>% rowMeans(na.rm=TRUE)
+divGenes4 <- cbind(divGenes4, meanDiversity)
 
 # add Standard Deviation for difference between samples (without NAs)
-StDev <- divGenes %>% dplyr::select(n.866, n.942, n.900, n.IXa) 
+StDev <- divGenes4 %>% dplyr::select(ChangesSum.866, ChangesSum.942, ChangesSum.900, ChangesSum.IXa) 
 StDev <- apply(StDev, 1, sd, na.rm = TRUE)
-divGenes <- cbind(divGenes, StDev)
+divGenes4 <- cbind(divGenes4, StDev)
 
 # round meanDiv and sd
-divGenes$meanDiv <- round(divGenes$meanDiv, digits = 2)
-divGenes$StDev <- round(divGenes$StDev, digits = 2)
+divGenes4$meanDiversity <- round(divGenes4$meanDiversity, digits = 2)
+divGenes4$StDev <- round(divGenes4$StDev, digits = 2)
 
+# arrange cols in specific order
+DivGenes <- divGenes4 %>% select(GeneID, Chr, FeatureType, Product,
+                                 meanDiversity, StDev, 3:6, 8:23)
+
+
+################################################################################
+################################################################################
 # write csv file
-write.csv(divGenes, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/DivGenes.csv")
+write.csv(DivGenes, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/divGenes.csv")
+
+
+
+
+
+
+
+
+
 
