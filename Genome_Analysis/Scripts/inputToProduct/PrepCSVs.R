@@ -7,10 +7,11 @@ library(VariantAnnotation)
 setwd(dir = "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/")
 
 ## Input = annotated VCF file
-#CollapsedVCF <- readVcf("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/IXa_annotated.vcf")
-#CollapsedVCF <- readVcf("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/866_annotated.vcf")
-#CollapsedVCF <- readVcf("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/900_annotated.vcf")
-#CollapsedVCF <- readVcf("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/InputFiles/942_annotated.vcf")
+#CollapsedVCF <- readVcf("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/InputFiles/IXa_annotated.vcf")
+#CollapsedVCF <- readVcf("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/InputFiles/866_annotated.vcf")
+#CollapsedVCF <- readVcf("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/InputFiles/900_annotated.vcf")
+#CollapsedVCF <- readVcf("https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/InputFiles/942_annotated.vcf")
+
 
 # Extract interesting data
 AminoAcidChange <- as.data.frame(CollapsedVCF@info@listData[["AminoAcidChange"]])
@@ -29,7 +30,10 @@ NAME <- setDT(NAME)[, paste0("CollapsedVCF@rowRanges@ranges@NAMES", 1:2) := tstr
 setnames(NAME, old = c("CollapsedVCF@rowRanges@ranges@NAMES1", "CollapsedVCF@rowRanges@ranges@NAMES2"), new = c("Chr", "Pos.REFALT"), skip_absent = T)
 NAME <- setDT(NAME)[, paste0("Pos.REFALT", 1:2) := tstrsplit(Pos.REFALT, "_")]
 setnames(NAME, old = c("Pos.REFALT1", "Pos.REFALT2"), new = c("Pos", "REF.ALT"), skip_absent = T)
-NAME <- NAME %>% dplyr::select(Chr, Pos, REF.ALT)
+NAME <- setDT(NAME)[, paste0("REF.ALT", 1:2) := tstrsplit(REF.ALT, "/")]
+setnames(NAME, old = c("REF.ALT1", "REF.ALT2"), new = c("REF", "ALT"), skip_absent = T)
+NAME <- NAME %>% dplyr::select(Chr, REF, ALT)
+
 
 AminoAcidChange <- AminoAcidChange %>% dplyr::select(value)
 
@@ -217,7 +221,7 @@ DivGenes <- divGenes4 %>% select(GeneID, Chr, FeatureType, Product,
 # write csv file
 write.csv(DivGenes, "/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/divGenes.csv")
 
-
+DivGenes <- read.csv("/Users/finnlo/Documents/Github/Crypto/Genome_Analysis/Products/divGenes.csv")
 
 
 
