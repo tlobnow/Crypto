@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-VCF_IN=~/Documents/Github/Crypto/Genome_Analysis/vcf/HZ_UGA_TYGZ1_PAR.vcf.gz
-VCF_OUT=~/Documents/Github/Crypto/Genome_Analysis/vcf/HZ_UGA_TYGZ1_PAR_filtered.vcf.gz
+VCF_IN=~/Desktop/vcf/06_samples/HZ_UGA_TYGZ1_PAR.vcf
+VCF_OUT=~/Desktop/vcfFiltered/06_samples_filtered.vcf.gz
 
 # set filters
 MAF=0.1

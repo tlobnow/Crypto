@@ -1,0 +1,24 @@
+---
+title: "CT_ANALYSIS"
+author: "Finn Lo"
+date: '2022-07-22'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libs, include = FALSE}
+library(tidyverse)
+library(knitr)
+
+```
+
+# THE ISOLATES
+
+```{r}
+isolates <- read.csv('')
+```
+
+# 

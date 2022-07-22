@@ -1,0 +1,13 @@
+Organism,Isolate,Location,Host,Abbr,Quality,Genotype,Year,Accession
+C.tyzzeri,UGA55,USA,Mmd,UGA55,excellent,IXb,2019,SRR5683558
+C.tyzzeri,TYGZ1,CHN,Mmm,TYGZ1,excellent,IXa,2021,SRR16934713
+C.tyzzeri,AA_0866,GER,Mmd,866,good,IXb,2022,unpublished
+C.tyzzeri,AA_0942,GER,Mmd,942,good,IXb,2022,unpublished
+C.tyzzeri,AA_0900,GER,Mmm,900,bad,IXb,2022,unpublished
+C.parvum,PAR,USA,Cattle,USA_P,excellent,II,2021,SRR16990213
+C.parvum,CHR,FRA,Human,FRA_P,excellent,II,2017,SRR18395901
+C.parvum,CN22972,CHN,Cattle,CHN_P,excellent,IId,2019,SRR15694495
+C.parvum,CZ44621,CZE,Human,CZE_P,excellent,IIa,2017,SRR15694518
+C.hominis,TKD,NZL,Human,NZL_H,excellent,Ib,2021,SRR14089464
+C.hominis,UKH1,GBR,Human,GBR_H,excellent,I,2013,SRR1015721
+C.hominis,TU502,UGA,Human,UGA_H,excellent,I,2013,SRR1015747
