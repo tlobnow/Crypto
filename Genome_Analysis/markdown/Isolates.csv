@@ -1,13 +1,16 @@
-Organism,Isolate,Location,Host,Abbr,Quality,Genotype,Year,Accession
-C.tyzzeri,UGA55,USA,Mmd,UGA55,excellent,IXb,2019,SRR5683558
-C.tyzzeri,TYGZ1,CHN,Mmm,TYGZ1,excellent,IXa,2021,SRR16934713
-C.tyzzeri,AA_0866,GER,Mmd,866,good,IXb,2022,unpublished
-C.tyzzeri,AA_0942,GER,Mmd,942,good,IXb,2022,unpublished
-C.tyzzeri,AA_0900,GER,Mmm,900,bad,IXb,2022,unpublished
-C.parvum,PAR,USA,Cattle,USA_P,excellent,II,2021,SRR16990213
-C.parvum,CHR,FRA,Human,FRA_P,excellent,II,2017,SRR18395901
-C.parvum,CN22972,CHN,Cattle,CHN_P,excellent,IId,2019,SRR15694495
-C.parvum,CZ44621,CZE,Human,CZE_P,excellent,IIa,2017,SRR15694518
-C.hominis,TKD,NZL,Human,NZL_H,excellent,Ib,2021,SRR14089464
-C.hominis,UKH1,GBR,Human,GBR_H,excellent,I,2013,SRR1015721
-C.hominis,TU502,UGA,Human,UGA_H,excellent,I,2013,SRR1015747
+Spp,Ssp,Abbr,Isolate,Location,Host,Quality,Year,Accession,Longitude,Latitude
+C.tyzzeri,IXb,GER_866,AA_0866,Germany,Mus,good,2022,unpublished,13.5558,52.9206
+C.tyzzeri,IXb,GER_942,AA_0942,Germany,Mus,good,2022,unpublished,13.2839,52.9576
+C.tyzzeri,IXb,GER_900,AA_0900,Germany,Mus,bad,2022,unpublished,14.0833,52.6967
+C.tyzzeri,IXb,USA_T,UGA55,USA,Mus,excellent,2019,SRR5683558,33.98008578,-83.40055695
+C.tyzzeri,IXa,CHN_T,TYGZ1,China,Mus,excellent,2021,SRR16934713,23.36025099,113.3677406
+C.parvum,II,FRA_P,CHR,France,Human,excellent,2017,SRR18395901,50.61110979,3.034755577
+C.parvum,IId,CHN_P,CN22972,China,Cattle,excellent,2019,SRR15694495,23.36025099,113.3677406
+C.parvum,IIa,CZE_P,CZ44621,Czech Republic,Human,excellent,2017,SRR15694518,49.60718072,14.9993668
+C.parvum,II,USA_P,-,USA,Cattle,excellent,2021,SRR16990213,47.04077841,-116.5231622
+C.parvum,IIa,USA2_P,USDA-91,USA,Cattle,excellent,2014,SRR15694485,44.69167196,-89.65916817
+C.hominis,Ib,NZL_H,TKD,New Zealand,Human,excellent,2021,SRR14089464,-36.67517599,174.7001438
+C.hominis,I,GBR_H,UKH1,United Kingdom,Human,excellent,2013,SRR1015721,51.61055436,-3.985158047
+C.hominis,I,UGA_H,TU502,Uganda,Human,excellent,2013,SRR1015747,1.531847786,32.3436882
+C.hominis,I,COL_H,UDEA567,Colombia,Human,excellent,2021,SRR14522748,6.271666355,-75.56948552
+C.hominis,Ib,GBR2_H,UKH36,United Kingdom,Human,excellent,2015,SRR13224185,51.61055436,-3.985158047
