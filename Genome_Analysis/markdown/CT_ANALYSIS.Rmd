@@ -15,6 +15,8 @@ library(knitr)
 library(ggpubr)
 library(readr)
 library(tibble)
+library(leaflet)
+library(htmltools)
 ```
 
 # THE ISOLATES
@@ -22,6 +24,86 @@ library(tibble)
 ```{r, isolates, echo=FALSE, message = F}
 isolates <- read.csv('https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/markdown/Isolates.csv')
 kable(isolates)
+```
+
+``` {r, isolates-map, echo = F, message = F, warning = F}
+
+map <- isolates %>% leaflet() %>% addProviderTiles("CartoDB") %>% setView(lat = 52.520007, lng =13.404954, zoom = 2)
+
+tyzzeri <- isolates %>% filter(Spp == "C.tyzzeri")
+parvum <- isolates %>% filter(Spp == "C.parvum")
+hominis <- isolates %>% filter(Spp == "C.hominis")
+
+mus <- isolates %>% filter(Host == "Mus")
+cattle <- isolates %>% filter(Host == "Cattle")
+human <- isolates %>% filter(Host == "Human")
+
+
+map1 <- map %>%
+  addPolylines(lat = c(55.0000, 53.6000, 53.51885, 52.8875  , 52.6053, 51.8978, 45.0000), 
+               lng = c(10.0000, 11.4563, 12.4464,13.8119 , 13.8756, 13.8103, 10.0000), 
+               color = "purple", 
+               weight = 10, 
+               opacity = 0.4) %>%
+  addCircleMarkers(data = cattle,
+                   col = "cornflowerblue",
+                   opacity = 1,
+                   label = ~htmlEscape(Abbr),
+                   popup = ~paste("<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude)),
+                   radius = 3,
+                   group = "Cattle") %>%
+  addCircleMarkers(data = human,
+                   col = "purple",
+                   opacity = 1,
+                   label = ~htmlEscape(Abbr),
+                   popup = ~paste("<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude)),
+                   radius = 3,
+                   group = "Human") %>%
+  addCircleMarkers(data = mus,
+                   col = "yellow",
+                   opacity = 1,
+                   label = ~htmlEscape(Abbr),
+                   popup = ~paste("<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude)),
+                   radius = 3,
+                   group = "Mus") %>%
+  addCircleMarkers(data = parvum,
+                   col = "blue",
+                   opacity = 1,
+                   label = ~htmlEscape(Abbr),
+                   popup = ~paste("<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude)),
+                   radius = 3,
+                   group = "C.parvum") %>%
+  addCircleMarkers(data = hominis,
+                   col = "orange",
+                   opacity = 1,
+                   label = ~htmlEscape(Abbr),
+                   popup = ~paste("<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude)),
+                   radius = 3,
+                   group = "C.hominis") %>%
+  addCircleMarkers(data = tyzzeri,
+                   col = "#EA3C53",
+                   opacity = 1,
+                   label = ~htmlEscape(Abbr),
+                   popup = ~paste("<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude)),
+                   radius = 3,
+                   group = "C.tyzzeri") %>%
+  addLegend("bottomright", 
+            colors = c('#FF7F7F', 'blue', 'orange'),
+            labels = c('C.tyzzeri',
+                       'C.parvum',
+                       'C.hominis'),
+            title = 'Species',
+            opacity = 1) %>%
+  addLegend("bottomleft", 
+            colors = c('yellow', 'cornflowerblue', 'purple'),
+            labels = c('Mus',
+                       'Cattle',
+                       'Human'),
+            title = 'Host',
+            opacity = 1) %>%
+  addLayersControl(overlayGroups = c('C.tyzzeri', 'C.parvum', 'C.hominis', 'Mus', 'Cattle', 'Human'), 
+                   options = layersControlOptions(collapsed = T))
+map1
 ```
 
 # WORKFLOW
@@ -125,21 +207,6 @@ Alternatively, this can be run in parallel after specification of all individual
 
     for i in /SAN/Ctyzzeri/all/fastq/*1.fastq.gz; do echo $(basename -a -s _1.fastq.gz $i); done > inds
     
-The list looks like this:
-
-- 866
-- 900
-- 942
-- CHN_P
-- CZE_P
-- FRA_P
-- GBR_H
-- NZL_H
-- TYGZ1
-- UGA55
-- UGA_H
-- USA_P
-
 The script can be run using `parallel 'sh parallel_align.sh {}' :::: inds`
 
     
@@ -244,6 +311,8 @@ These are the first 11 fields of the vcf and they are always present. What do th
 - FILTER - filter status - if PASS then all filters passed
 - INFO - additional info on each site - explanation stored in header
 - FORMAT- the format for the genotype fields
+
+![VCF format](https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/markdown/vcf_format.png)
 
     07_vcfIndex.sh
     bcftools index /SAN/Ctyzzeri/all/results/vcf/variants.vcf.gz
