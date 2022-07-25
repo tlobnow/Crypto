@@ -1,0 +1,19 @@
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--gzvcf /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/products/vcf/05_samples.vcf.gz
+	--het
+	--out /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz
+
+Using zlib version: 1.2.11
+Warning: Expected at least 2 parts in INFO entry: ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes for each ALT allele, in the same order as listed">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Number of high-quality ref-forward , ref-reverse, alt-forward and alt-reverse bases">
+Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Number of high-quality ref-forward , ref-reverse, alt-forward and alt-reverse bases">
+After filtering, kept 5 out of 5 Individuals
+Outputting Individual Heterozygosity
+	Individual Heterozygosity: Only using fully diploid SNPs.
+	Individual Heterozygosity: Only using biallelic SNPs.
+After filtering, kept 30515 out of a possible 30515 Sites
+Run Time = 0.00 seconds

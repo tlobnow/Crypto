@@ -1,0 +1,39 @@
+PLINK v1.90b6.26 64-bit (2 Apr 2022)
+Options in effect:
+  --allow-extra-chr
+  --double-id
+  --extract /SAN/Ctyzzeri/all/scripts/7_samples.prune.in
+  --make-bed
+  --out 7_samples_filtered_sorted
+  --pca
+  --set-missing-var-ids @:#$1,$2
+  --vcf /SAN/Ctyzzeri/all/results/vcf/7_samples/HZ_UGA_TYGZ1_PAR_HOM_filtered.vcf.gz
+
+Hostname: harriet
+Working directory: /SAN/Ctyzzeri/all/scripts
+Start time: Tue Jun 14 16:04:41 2022
+
+Random number seed: 1655215481
+515931 MB RAM detected; reserving 257965 MB for main workspace.
+--vcf: 7_samples_filtered_sorted-temporary.bed +
+7_samples_filtered_sorted-temporary.bim +
+7_samples_filtered_sorted-temporary.fam written.
+301 variants loaded from .bim file.
+301 missing IDs set.
+7 people (0 males, 0 females, 7 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to 7_samples_filtered_sorted.nosex .
+--extract: 16 variants remaining.
+Using up to 95 threads (change this with --threads).
+Before main variant filters, 7 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.866071.
+16 variants and 7 people pass filters and QC.
+Note: No phenotypes present.
+Relationship matrix calculation complete.
+Warning: calculating 7 PCs, since there are only 7 samples.
+--pca: Results saved to 7_samples_filtered_sorted.eigenval and
+7_samples_filtered_sorted.eigenvec .
+--make-bed to 7_samples_filtered_sorted.bed + 7_samples_filtered_sorted.bim +
+7_samples_filtered_sorted.fam ... done.
+
+End time: Tue Jun 14 16:04:41 2022

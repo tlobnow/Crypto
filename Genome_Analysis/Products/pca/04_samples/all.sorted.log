@@ -1,0 +1,36 @@
+PLINK v1.90b6.26 64-bit (2 Apr 2022)
+Options in effect:
+  --allow-extra-chr
+  --double-id
+  --extract all.sorted.prune.in
+  --make-bed
+  --out all.sorted
+  --pca
+  --set-missing-var-ids @:#$1,$2
+  --vcf /SAN/Ctyzzeri/all/results/vcf/all.sorted.vcf.gz
+
+Hostname: harriet
+Working directory: /SAN/Ctyzzeri/all/scripts
+Start time: Mon Jun 13 14:39:02 2022
+
+Random number seed: 1655123942
+515931 MB RAM detected; reserving 257965 MB for main workspace.
+--vcf: all.sorted-temporary.bed + all.sorted-temporary.bim +
+all.sorted-temporary.fam written.
+136 variants loaded from .bim file.
+136 missing IDs set.
+4 people (0 males, 0 females, 4 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to all.sorted.nosex .
+--extract: 19 variants remaining.
+Using up to 95 threads (change this with --threads).
+Before main variant filters, 4 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is exactly 1.
+19 variants and 4 people pass filters and QC.
+Note: No phenotypes present.
+Relationship matrix calculation complete.
+Warning: calculating 4 PCs, since there are only 4 samples.
+--pca: Results saved to all.sorted.eigenval and all.sorted.eigenvec .
+--make-bed to all.sorted.bed + all.sorted.bim + all.sorted.fam ... done.
+
+End time: Mon Jun 13 14:39:02 2022
