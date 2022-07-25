@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r libs, include = FALSE}
+```{r libs, include = TRUE, echo = F, message=F}
 library(tidyverse)
 library(knitr)
 library(ggpubr)
@@ -19,7 +19,7 @@ library(tibble)
 
 # THE ISOLATES
 
-```{r, isolates, echo=FALSE}
+```{r, isolates, echo=FALSE, message = F}
 isolates <- read.csv('https://raw.githubusercontent.com/tlobnow/Crypto/main/Genome_Analysis/markdown/Isolates.csv')
 kable(isolates)
 ```
@@ -321,7 +321,7 @@ The first thing we will do is look at the statistics we generated for each of th
 The first metric we will look at is the (Phred encoded) site quality. This is a measure of how much confidence we have in our variant calls. You will see that for each site in our subsampled VCF, we have extracted the site quality score.
 Remember that a Phred score of 30 represents a 1 in 1000 chance that our SNP call is erroneous. Most sites should exceed this to suggest that we have a lot of high confidence calls. A minimum threshold of 30 should be set and other aspects of the data should be filtered more strongly.
 
-``` {r stat-prep, echo = F, warning = F}
+``` {r stat-prep, echo = F, warning = F, message = F}
 var_qual_04 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/04_samples.vcf.gz.lqual", col.names = c("chr", "pos", "qual"), skip = 1)
 var_qual_05 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz.lqual", col.names = c("chr", "pos", "qual"), skip = 1)
 var_qual_06 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/06_samples.vcf.gz.lqual", col.names = c("chr", "pos", "qual"), skip = 1)
@@ -350,7 +350,7 @@ We could set our minimum coverage at the 5 and 95% quantiles but we should keep 
 
 What is more important here is that we set a good maximum depth cufoff. As the outliers show, some regions clearly have extremely high coverage and this likely reflects mapping/assembly errors and also paralogous or repetitive regions. We want to exclude these as they will bias our analyses. Usually a good rule of thumb is something the mean depth x 2 
 
-``` {r variant-mean-depth, echo = F, warning = F}
+``` {r variant-mean-depth, echo = F, warning = F, message = F}
 var_depth_04 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/04_samples.vcf.gz.ldepth.mean", col.names = c("chr", "pos", "mean_depth", "var_depth"), skip = 1)
 var_depth_05 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz.ldepth.mean", col.names = c("chr", "pos", "mean_depth", "var_depth"), skip = 1)
 var_depth_06 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/06_samples.vcf.gz.ldepth.mean", col.names = c("chr", "pos", "mean_depth", "var_depth"), skip = 1)
@@ -375,7 +375,7 @@ fig2
 ```
 
 
-``` {r var-depth-summary, echo = F, warning = F, include = F}
+``` {r var-depth-summary, echo = F, warning = F, include = F, message = F}
 # var_depth_04
 summary(var_depth_04$mean_depth)
 # var_depth_05
@@ -395,7 +395,7 @@ Next up we will look at the proportion of missingness at each variant. This is a
 
 The results indicate relatively high missingness, especially among _C.tyzzeri_ samples. One thing to note here is that vcftools inverts the direction of missigness, so our 10% threshold means we will tolerate 90% missingness. Typically missingness of 75-95% is used and we will need to accept 75% due to our missingness.
 
-``` {r variant-missingness, echo = F, warning = F, include = F}
+``` {r variant-missingness, echo = F, warning = F, include = F, message = F}
 var_miss_04 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/04_samples.vcf.gz.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
 var_miss_05 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
 var_miss_06 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/06_samples.vcf.gz.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
@@ -413,7 +413,7 @@ fig3 <- ggarrange(g,h,i,j,k, ncol = 3, nrow = 2,
 fig3
 ```
 
-``` {r var-miss-summary, echo = F, warning = F}
+``` {r var-miss-summary, echo = F, warning = F, message = F}
 # var_miss_04
 summary(var_miss_04$fmiss)
 # var_depth_05
@@ -432,7 +432,7 @@ Last of all for our per variant analyses, we will take a look at the distributio
 
 We use apply on our allele frequencies to return the lowest allele frequency at each variant. We then added these to our dataframe as the variable maf.
 
-``` {r, MAF, echo = F, warning = F}
+``` {r, MAF, echo = F, warning = F, message = F}
 # load data
 var_freq_04 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/04_samples.vcf.gz.frq", col_names = c("chr", "pos", "nalleles", "nchr", "a1", "a2"), skip = 1)
 var_freq_05 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz.frq", col_names = c("chr", "pos", "nalleles", "nchr", "a1", "a2"), skip = 1)
@@ -448,11 +448,11 @@ var_freq_07$a2 <- as.numeric(var_freq_07$a2)
 var_freq_12$a2 <- as.numeric(var_freq_12$a2)
 
 # find minor allele frequency (maf)
-var_freq_04$maf <- var_freq_04 %>% select(a1, a2) %>% apply(1, function(z) min(z))
-var_freq_05$maf <- var_freq_05 %>% select(a1, a2) %>% apply(1, function(z) min(z))
-var_freq_06$maf <- var_freq_06 %>% select(a1, a2) %>% apply(1, function(z) min(z))
-var_freq_07$maf <- var_freq_07 %>% select(a1, a2) %>% apply(1, function(z) min(z))
-var_freq_12$maf <- var_freq_12 %>% select(a1, a2) %>% apply(1, function(z) min(z))
+var_freq_04$maf <- var_freq_04 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
+var_freq_05$maf <- var_freq_05 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
+var_freq_06$maf <- var_freq_06 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
+var_freq_07$maf <- var_freq_07 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
+var_freq_12$maf <- var_freq_12 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
 
 l <- ggplot(var_freq_04, aes(maf)) + geom_density(fill = "lightblue",      colour = "black", alpha = 0.3) + theme_light()
 m <- ggplot(var_freq_05, aes(maf)) + geom_density(fill = "cornflowerblue", colour = "black", alpha = 0.3) + theme_light()
@@ -465,7 +465,7 @@ fig4 <- ggarrange(l,m,n,o,p, ncol = 3, nrow = 2,
 fig4
 ```
 
-``` {r, maf-summary, echo = F, warning = F}
+``` {r, maf-summary, echo = F, warning = F, message = F}
 summary(var_freq_04$maf)
 summary(var_freq_05$maf)
 summary(var_freq_06$maf)
@@ -486,7 +486,7 @@ As well as a our per variant statistics we generated earlier, we also calculated
 
 #### Mean depth per individual
 
-``` {r, mean-depth-ind, echo = F, warning = F}
+``` {r, mean-depth-ind, echo = F, warning = F, message = F}
 # load data
 ind_depth_04 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/04_samples.vcf.gz.idepth", col_names = c("ind", "nsites", "depth"), skip = 1)
 ind_depth_05 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz.idepth", col_names = c("ind", "nsites", "depth"), skip = 1)
@@ -512,7 +512,7 @@ Because we are only plotting data for few individuals, the plot looks a little d
 
 Next we will look at the proportion of missing data per individual. This is very similar to the missing data per site, but here we will focus on the fmiss column - i.e. the proportion of missing data.
 
-``` {r, miss-ind, echo = F, warning = F}
+``` {r, miss-ind, echo = F, warning = F, message = F}
 # load data
 ind_miss_04 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/04_samples.vcf.gz.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
 ind_miss_05 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
@@ -538,7 +538,7 @@ We cannot assess heterozygosity due to the haploid nature of _Cryptosporidium_ s
 
 Technically, computing heterozygosity and the inbreeding coefficient (F) for each individual can quickly highlight outlier individuals that are e.g. inbred (strongly negative F), suffer from high sequencing error problems or contamination with DNA from another individual leading to inflated heterozygosity (high F), or PCR duplicates or low read depth leading to allelic dropout and thus underestimated heterozygosity (stongly negative F). However, note that here we assume Hardy-Weinberg equilibrium. If the individuals are not sampled from the same population, the expected heterozygosity will be overestimated due to the Wahlund-effect. It may still be worth to compute heterozygosities even if the samples are from more than one population to check if any of the individuals stands out which could indicate problems.
 
-``` {r, het-ind, echo = F, warning = F, include = F}
+``` {r, het-ind, echo = F, warning = F, include = F, message = F}
 # load data
 ind_het_04 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/04_samples.vcf.gz.het", col_names = c("ind","ho", "he", "nsites", "f"), skip = 1)
 ind_het_05 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz.het", col_names = c("ind","ho", "he", "nsites", "f"), skip = 1)
@@ -586,7 +586,7 @@ Now we have an idea of how to set out thresholds, we will do just that.
     VCF_OUT=~/Desktop/vcfFiltered/variants_filtered.vcf.gz
 
     # set filters
-    MAF=0.1
+    MAF=0.05
     MISS=0.75
     QUAL=30
     MIN_DEPTH=10
@@ -674,7 +674,7 @@ Plink binary output:
 ## Bar plot 
 First we will plot the eigenvalues. It is quite straightforward to translate these into percentage variance explained (although note, you could just plot these raw if you wished). Let's take a look at the the bar plot showing the percentage of variance each principal component explains.
 
-``` {r, bar-04-samples, echo = F, warning = F}
+``` {r, bar-04-samples, echo = F, warning = F, message = F}
 # LOAD THE PCA DATA
 pca_04 <- read_table("~/Documents/Github/Crypto/Genome_Analysis/products/pcaFiltered/04_samples.eigenvec", col_names = F)
 eigenval_04 <- scan("~/Documents/Github/Crypto/Genome_Analysis/products/pcaFiltered/04_samples.eigenval")
@@ -940,7 +940,7 @@ fig7
 
 Cumulatively, they explain 100% of the variance but PC1, PC2 (and possible PC3) together explain most of the variance.
 
-``` {r, cum, echo = F, warning = F}
+``` {r, cum, echo = F, warning = F, message = F}
 # calculate the cumulative sum of the percentage variance explained
 cumsum(pve_04$pve)
 cumsum(pve_05$pve)
@@ -949,32 +949,32 @@ cumsum(pve_07$pve)
 cumsum(pve_12$pve)
 ```
 
-``` {r, PCA-04-samples, echo = F, warning = F}
+``` {r, PCA-04-samples, echo = F, warning = F, message = F}
 # plot pca
 f <- pca_04 %>% ggplot(aes((signif(pve_04$pve[1], 3)*PC1), 
                            (signif(pve_04$pve[2], 3))*PC2, col = spp_04, shape = host_04, label = sample_04)) + geom_point(size = 3) + 
   geom_label(nudge_y = 2) + scale_color_manual(values = c("red", "blue", "orange")) + coord_equal() + theme_light() + 
-  xlab(paste0("PC1 (", signif(pve_04$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve$pve[2], 3), "%)"))
+  xlab(paste0("PC1 (", signif(pve_04$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve_04$pve[2], 3), "%)"))
 
 g <- pca_05 %>% ggplot(aes((signif(pve_05$pve[1], 3)*PC1), 
                            (signif(pve_05$pve[2], 3))*PC2, col = spp_05, shape = host_05, label = sample_05)) + geom_point(size = 3) + 
   geom_label(nudge_y = 2) + scale_color_manual(values = c("red", "blue", "orange")) + coord_equal() + theme_light() + 
-  xlab(paste0("PC1 (", signif(pve_05$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve$pve[2], 3), "%)"))
+  xlab(paste0("PC1 (", signif(pve_05$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve_05$pve[2], 3), "%)"))
 
 h <- pca_06 %>% ggplot(aes((signif(pve_06$pve[1], 3)*PC1), 
                            (signif(pve_06$pve[2], 3))*PC2, col = spp_06, shape = host_06, label = sample_06)) + geom_point(size = 3) + 
   geom_label(nudge_y = 2) + scale_color_manual(values = c("blue", "red", "orange")) + coord_equal() + theme_light() + 
-  xlab(paste0("PC1 (", signif(pve_06$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve$pve[2], 3), "%)"))
+  xlab(paste0("PC1 (", signif(pve_06$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve_06$pve[2], 3), "%)"))
 
 i <- pca_07 %>% ggplot(aes((signif(pve_07$pve[1], 3)*PC1), 
                            (signif(pve_07$pve[2], 3))*PC2, col = spp_07, shape = host_07, label = sample_07)) + geom_point(size = 3) + 
   geom_label(nudge_y = 2) + scale_color_manual(values = c("orange", "blue", "red")) + coord_equal() + theme_light() + 
-  xlab(paste0("PC1 (", signif(pve_07$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve$pve[2], 3), "%)"))
+  xlab(paste0("PC1 (", signif(pve_07$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve_07$pve[2], 3), "%)"))
 
 j <- pca_12 %>% ggplot(aes((signif(pve_12$pve[1], 3)*PC1), 
                            (signif(pve_12$pve[2], 3))*PC2, col = spp_12, shape = host_12, label = sample_12)) + geom_point(size = 3) + 
   geom_label(nudge_y = 2) + scale_color_manual(values = c("orange", "blue", "red")) + coord_equal() + theme_light() + 
-  xlab(paste0("PC1 (", signif(pve_12$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve$pve[2], 3), "%)"))
+  xlab(paste0("PC1 (", signif(pve_12$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve_12$pve[2], 3), "%)"))
 
 f
 g
