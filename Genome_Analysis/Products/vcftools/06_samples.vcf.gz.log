@@ -7,13 +7,4 @@ Parameters as interpreted:
 	--het
 	--out /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/products/vcftools/06_samples.vcf.gz
 
-Using zlib version: 1.2.11
-Warning: Expected at least 2 parts in INFO entry: ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes for each ALT allele, in the same order as listed">
-Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Number of high-quality ref-forward , ref-reverse, alt-forward and alt-reverse bases">
-Warning: Expected at least 2 parts in INFO entry: ID=DP4,Number=4,Type=Integer,Description="Number of high-quality ref-forward , ref-reverse, alt-forward and alt-reverse bases">
-After filtering, kept 6 out of 6 Individuals
-Outputting Individual Heterozygosity
-	Individual Heterozygosity: Only using fully diploid SNPs.
-	Individual Heterozygosity: Only using biallelic SNPs.
-After filtering, kept 57899 out of a possible 57899 Sites
-Run Time = 0.00 seconds
+Error: Can't determine file type of /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/products/vcf/06_samples.vcf.gz
