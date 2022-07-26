@@ -1,0 +1,6 @@
+---
+title: "genomics bootcamp"
+author: "Finn Lo"
+date: "2022-07-26"
+output: html_document
+---
