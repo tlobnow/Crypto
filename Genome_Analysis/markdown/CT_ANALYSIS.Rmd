@@ -26,10 +26,100 @@ isolates <- read.csv('https://raw.githubusercontent.com/tlobnow/Crypto/main/Geno
 kable(isolates)
 ```
 
+## Samples with Illumina Sequencing Results
+
+``` {r Illumina-HMHZ, echo = F, warning = F, message = F}
+SOTA <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/SOTA_Data_Product.csv")  %>% filter(!is.na(Latitude), !is.na(Longitude), !is.na(HI), !Mouse_ID %in% c("SK_2697", "SK_3173", "SK_905"))
+
+Crypto_Detection_21 <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/Crypto_Detection.csv")  %>% filter(Year == 2021, ILWE_Crypto_Ct > 0, !is.na(Latitude), !is.na(Longitude))
+
+# color palette for HI
+r <- c(0,    64, 128, 179, 217, 255)
+g <- c(0,    12,  25,  25,  12,   0)
+b <- c(255, 249, 243, 191,  95,   0)
+
+beach <- function (n, name = c("beach.colors")) 
+  {
+    beach.colors = rgb(r,g,b,maxColorValue = 255)
+    name = match.arg(name)
+    orig = eval(parse(text = name))
+    rgb = t(col2rgb(orig))
+    temp = matrix(NA, ncol = 3, nrow = n)
+    x = seq(0, 1, , length(orig))
+    xg = seq(0, 1, , n)
+    for (k in 1:3) {
+      hold = spline(x, rgb[, k], n = n)$y
+      hold[hold < 0] = 0
+      hold[hold > 255] = 255
+      temp[, k] = round(hold)
+    }
+    palette = rgb(temp[, 1], temp[, 2], temp[, 3], maxColorValue = 255)
+    palette
+}
+
+data_col_HI_Level = colorFactor(beach(6), SOTA$HI_Level)
+data_col_HI       = colorFactor(beach(6), SOTA$HI)
+
+Illumina <- Crypto_Detection_21 %>%
+  mutate(illumina = Mouse_ID %in% c("AA_0900", "AA_0866", "AA_0942")) %>%
+  filter(illumina == T)
+
+map <- Crypto_Detection_21 %>% leaflet() %>% addProviderTiles("CartoDB") %>% setView(lat = 52.520007, lng =13.404954, zoom = 6)
+map1 <- map %>%
+  addPolylines(lat = c(55.0000, 53.6000, 53.51885, 52.8875  , 52.6053, 51.8978, 45.0000), 
+               lng = c(10.0000, 11.4563, 12.4464,13.8119 , 13.8756, 13.8103, 10.0000), 
+               color = "purple", 
+               weight = 55, 
+               opacity = 0.1) %>%
+  addCircleMarkers(data = SOTA,
+                   col = ~data_col_HI(HI),
+                   label = ~htmlEscape(Mouse_ID),
+                   popup = ~paste("<b>Mouse_ID:<b>",as.character(Mouse_ID), "<br>",
+                                  "<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude), "<br>",
+                                  "<b>HI:<b>",      as.character(round(HI, digits = 2)), "<br>",
+                                  "<b>Year:<b>",    as.character(Year),"<br>",
+                                  "<b>Ct Mean:<b>",      as.character(round(ILWE_Crypto_Ct, digits = 2)),"<br>",
+                                  "<b>Oocyst Prediction:<b>", as.character(Oocyst_Predict_Crypto), "<br>",
+                                  "<b>Sex:<b>", Sex, "<br>",
+                                  sep=" "),
+                   opacity = 1,
+                   radius = 3,
+                   group = "Samples (total)") %>%
+  addCircleMarkers(data = Illumina,
+                   color = 'black',
+                   label = ~htmlEscape(Mouse_ID),
+                   popup = ~paste("<b>Mouse_ID:<b>",as.character(Mouse_ID), "<br>",
+                                  "<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude), "<br>",
+                                  "<b>HI:<b>",      as.character(round(HI, digits = 2)), "<br>",
+                                  sep=" "),
+                   opacity = 5,
+                   radius = 4,
+                   group = 'black') %>%
+  addCircleMarkers(data = Illumina,
+                   color = 'orange',
+                   label = ~htmlEscape(Mouse_ID),
+                   popup = ~paste("<b>Mouse_ID:<b>",as.character(Mouse_ID), "<br>",
+                                  "<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude), "<br>",
+                                  "<b>HI:<b>",      as.character(round(HI, digits = 2)), "<br>",
+                                  sep=" "),
+                   opacity = 5,
+                   radius = 3,
+                   group = 'Illumina') %>%
+  
+  addLegend("bottomleft", 
+            pal = data_col_HI_Level, 
+            title = "Hybrid Index",
+            values = SOTA$HI_Level, 
+            group = c('HI = 0.00', 'HI < 0.25', 'HI < 0.50', 'HI < 0.75', 'HI < 1.00', 'HI = 1.00'),
+            opacity = 1) %>%
+  addLayersControl(overlayGroups = c('Illumina', "Samples (total)"),
+                   options = layersControlOptions(collapsed = T))
+map1
+```
+
+## Spatial Distribution of Samples
+
 ``` {r, isolates-map, echo = F, message = F, warning = F}
-
-map <- isolates %>% leaflet() %>% addProviderTiles("CartoDB") %>% setView(lat = 52.520007, lng =13.404954, zoom = 2)
-
 tyzzeri <- isolates %>% filter(Spp == "C.tyzzeri")
 parvum <- isolates %>% filter(Spp == "C.parvum")
 hominis <- isolates %>% filter(Spp == "C.hominis")
@@ -38,22 +128,27 @@ mus <- isolates %>% filter(Host == "Mus")
 cattle <- isolates %>% filter(Host == "Cattle")
 human <- isolates %>% filter(Host == "Human")
 
-
+map <- isolates %>% leaflet() %>% addProviderTiles("CartoDB") %>% setView(lat = 52.520007, lng =13.404954, zoom = 1)
 map1 <- map %>%
   addPolylines(lat = c(55.0000, 53.6000, 53.51885, 52.8875  , 52.6053, 51.8978, 45.0000), 
                lng = c(10.0000, 11.4563, 12.4464,13.8119 , 13.8756, 13.8103, 10.0000), 
                color = "purple", 
                weight = 10, 
                opacity = 0.4) %>%
+  addCircleMarkers(data = isolates,
+                   col = "black",
+                   opacity = 1,
+                   radius = 4,
+                   group = "Background") %>%
   addCircleMarkers(data = cattle,
-                   col = "cornflowerblue",
+                   col = "#73be73",
                    opacity = 1,
                    label = ~htmlEscape(Abbr),
                    popup = ~paste("<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude)),
                    radius = 3,
                    group = "Cattle") %>%
   addCircleMarkers(data = human,
-                   col = "purple",
+                   col = "#ca80e9",
                    opacity = 1,
                    label = ~htmlEscape(Abbr),
                    popup = ~paste("<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude)),
@@ -95,7 +190,7 @@ map1 <- map %>%
             title = 'Species',
             opacity = 1) %>%
   addLegend("bottomleft", 
-            colors = c('yellow', 'cornflowerblue', 'purple'),
+            colors = c('yellow', '#82d682', '#ca80e9'),
             labels = c('Mus',
                        'Cattle',
                        'Human'),
@@ -117,7 +212,6 @@ map1
     fasterq-dump *.sra --split-files
 
 ## QC and trimming
-
 
 --in1 and --in2: specify your files of forward (1) reads and of the reverse (2) reads.
 
@@ -166,7 +260,12 @@ Quality filtering is enabled by default, but you can disable it with -Q. Current
 
 ## Indexing the Reference Sequence
 
+    02_bwa_index.sh / 02_samtools_faidx.sh
+    
+    #!/usr/bin/env bash
     bwa index /SAN/Ctyzzeri/all/resources/CryptoDB-57_CtyzzeriUGA55_Genome.fasta
+    
+    #!/usr/bin/env bash
     samtools faidx /SAN/Ctyzzeri/all/resources/*.fasta
 
 
@@ -210,7 +309,7 @@ Alternatively, this can be run in parallel after specification of all individual
 The script can be run using `parallel 'sh parallel_align.sh {}' :::: inds`
 
     
-    parallel_align.sh
+    03_parallel_align.sh
     
     #!/usr/bin/env bash
 
@@ -222,7 +321,7 @@ The script can be run using `parallel 'sh parallel_align.sh {}' :::: inds`
 
     FORWARD=/SAN/Ctyzzeri/all/results/filteredReads/${IND}.trimmed.R1.fastq.gz
     REVERSE=/SAN/Ctyzzeri/all/results/filteredReads/${IND}.trimmed.R2.fastq.gz
-    OUTPUT=/SAN/Ctyzzeri/all/results/partest/${IND}_sort.bam
+    OUTPUT=/SAN/Ctyzzeri/all/results/align/${IND}_sort.bam
 
     # align and sort
     echo "Aligning $IND with bwa"
@@ -428,9 +527,9 @@ var_depth_12 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/v
 
 fig2 <- ggplot(show.legend = T) +
   geom_density(data = var_depth_04, aes(mean_depth, fill = "04_samples"), colour = "black", alpha = 0.3, show.legend = T) +
-  geom_density(data = var_depth_05, aes(mean_depth, fill = "05_samples"), colour = "black", alpha = 0.3, show.legend = T) +
-  geom_density(data = var_depth_06, aes(mean_depth, fill = "06_samples"), colour = "black", alpha = 0.3, show.legend = T) +
-  geom_density(data = var_depth_07, aes(mean_depth, fill = "07_samples"), colour = "black", alpha = 0.3, show.legend = T) +
+  #geom_density(data = var_depth_05, aes(mean_depth, fill = "05_samples"), colour = "black", alpha = 0.3, show.legend = T) +
+  #geom_density(data = var_depth_06, aes(mean_depth, fill = "06_samples"), colour = "black", alpha = 0.3, show.legend = T) +
+  #geom_density(data = var_depth_07, aes(mean_depth, fill = "07_samples"), colour = "black", alpha = 0.3, show.legend = T) +
   geom_density(data = var_depth_12, aes(mean_depth, fill = "12_samples"), colour = "black", alpha = 0.3, show.legend = T) +
   theme_light() +
   scale_fill_manual(name="Legend",values=c('04_samples'="lightblue", 
@@ -448,11 +547,11 @@ fig2
 # var_depth_04
 summary(var_depth_04$mean_depth)
 # var_depth_05
-summary(var_depth_05$mean_depth)
+#summary(var_depth_05$mean_depth)
 # var_depth_06
-summary(var_depth_06$mean_depth)
+#summary(var_depth_06$mean_depth)
 # var_depth_07
-summary(var_depth_07$mean_depth)
+#summary(var_depth_07$mean_depth)
 # var_depth_12
 summary(var_depth_12$mean_depth)
 ```
@@ -471,14 +570,15 @@ var_miss_06 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vc
 var_miss_07 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/07_samples.vcf.gz.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
 var_miss_12 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/12_samples.vcf.gz.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
 
-g <- ggplot(var_miss_04, aes(fmiss)) + geom_density(fill = "lightblue",      colour = "black", alpha = 0.3) + theme_light()
-h <- ggplot(var_miss_05, aes(fmiss)) + geom_density(fill = "cornflowerblue", colour = "black", alpha = 0.3) + theme_light()
-i <- ggplot(var_miss_06, aes(fmiss)) + geom_density(fill = "orange",         colour = "black", alpha = 0.3) + theme_light()
-j <- ggplot(var_miss_07, aes(fmiss)) + geom_density(fill = "yellow",         colour = "black", alpha = 0.3) + theme_light()
-k <- ggplot(var_miss_12, aes(fmiss)) + geom_density(fill = "green",          colour = "black", alpha = 0.3) + theme_light()
+a <- ggplot(var_miss_04, aes(fmiss)) + geom_density(fill = "lightblue",      colour = "black", alpha = 0.3) + theme_light()
+b <- ggplot(var_miss_05, aes(fmiss)) + geom_density(fill = "cornflowerblue", colour = "black", alpha = 0.3) + theme_light()
+c <- ggplot(var_miss_06, aes(fmiss)) + geom_density(fill = "orange",         colour = "black", alpha = 0.3) + theme_light()
+d <- ggplot(var_miss_07, aes(fmiss)) + geom_density(fill = "yellow",         colour = "black", alpha = 0.3) + theme_light()
+e <- ggplot(var_miss_12, aes(fmiss)) + geom_density(fill = "green",          colour = "black", alpha = 0.3) + theme_light()
 
-fig3 <- ggarrange(g,h,i,j,k, ncol = 3, nrow = 2, 
-                  labels = c('04_samples', '05_samples', '06_samples', '07_samples', '12_samples'))
+fig3 <- ggarrange(a,b,c,d,e, ncol = 3, nrow = 2, 
+                  labels = c('04_samples', '05_samples', '06_samples', '07_samples', 
+                             '12_samples'))
 fig3
 ```
 
@@ -523,13 +623,13 @@ var_freq_06$maf <- var_freq_06 %>% dplyr::select(a1, a2) %>% apply(1, function(z
 var_freq_07$maf <- var_freq_07 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
 var_freq_12$maf <- var_freq_12 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
 
-l <- ggplot(var_freq_04, aes(maf)) + geom_density(fill = "lightblue",      colour = "black", alpha = 0.3) + theme_light()
-m <- ggplot(var_freq_05, aes(maf)) + geom_density(fill = "cornflowerblue", colour = "black", alpha = 0.3) + theme_light()
-n <- ggplot(var_freq_06, aes(maf)) + geom_density(fill = "orange",         colour = "black", alpha = 0.3) + theme_light()
-o <- ggplot(var_freq_07, aes(maf)) + geom_density(fill = "yellow",         colour = "black", alpha = 0.3) + theme_light()
-p <- ggplot(var_freq_12, aes(maf)) + geom_density(fill = "green",          colour = "black", alpha = 0.3) + theme_light()
+a <- ggplot(var_freq_04, aes(maf)) + geom_density(fill = "lightblue",      colour = "black", alpha = 0.3) + theme_light()
+b <- ggplot(var_freq_05, aes(maf)) + geom_density(fill = "cornflowerblue", colour = "black", alpha = 0.3) + theme_light()
+c <- ggplot(var_freq_06, aes(maf)) + geom_density(fill = "orange",         colour = "black", alpha = 0.3) + theme_light()
+d <- ggplot(var_freq_07, aes(maf)) + geom_density(fill = "yellow",         colour = "black", alpha = 0.3) + theme_light()
+e <- ggplot(var_freq_12, aes(maf)) + geom_density(fill = "green",          colour = "black", alpha = 0.3) + theme_light()
 
-fig4 <- ggarrange(l,m,n,o,p, ncol = 3, nrow = 2, 
+fig4 <- ggarrange(a,b,c,d,e, ncol = 3, nrow = 2, 
                   labels = c('04_samples', '05_samples', '06_samples', '07_samples', '12_samples'))
 fig4
 ```
@@ -563,13 +663,13 @@ ind_depth_06 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/v
 ind_depth_07 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/07_samples.vcf.gz.idepth", col_names = c("ind", "nsites", "depth"), skip = 1)
 ind_depth_12 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/12_samples.vcf.gz.idepth", col_names = c("ind", "nsites", "depth"), skip = 1)
 
-q <- ggplot(ind_depth_04, aes(depth)) + geom_histogram(fill = "lightblue",      colour = "black", alpha = 0.3) + theme_light()
-r <- ggplot(ind_depth_05, aes(depth)) + geom_histogram(fill = "cornflowerblue", colour = "black", alpha = 0.3) + theme_light()
-s <- ggplot(ind_depth_06, aes(depth)) + geom_histogram(fill = "orange",         colour = "black", alpha = 0.3) + theme_light()
-t <- ggplot(ind_depth_07, aes(depth)) + geom_histogram(fill = "yellow",         colour = "black", alpha = 0.3) + theme_light()
-u <- ggplot(ind_depth_12, aes(depth)) + geom_histogram(fill = "green",          colour = "black", alpha = 0.3) + theme_light()
+a <- ggplot(ind_depth_04, aes(depth)) + geom_histogram(fill = "lightblue",      colour = "black", alpha = 0.3) + theme_light()
+b <- ggplot(ind_depth_05, aes(depth)) + geom_histogram(fill = "cornflowerblue", colour = "black", alpha = 0.3) + theme_light()
+c <- ggplot(ind_depth_06, aes(depth)) + geom_histogram(fill = "orange",         colour = "black", alpha = 0.3) + theme_light()
+d <- ggplot(ind_depth_07, aes(depth)) + geom_histogram(fill = "yellow",         colour = "black", alpha = 0.3) + theme_light()
+e <- ggplot(ind_depth_12, aes(depth)) + geom_histogram(fill = "green",          colour = "black", alpha = 0.3) + theme_light()
 
-fig5 <- ggarrange(q,r,s,t,u, ncol = 3, nrow = 2, 
+fig5 <- ggarrange(a,b,c,d,e, ncol = 3, nrow = 2, 
                   labels = c('04_samples', '05_samples', '06_samples', '07_samples', '12_samples'))
 fig5
 ```
@@ -589,13 +689,13 @@ ind_miss_06 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vc
 ind_miss_07 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/07_samples.vcf.gz.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
 ind_miss_12 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/12_samples.vcf.gz.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
 
-v <- ggplot(ind_miss_04, aes(fmiss)) + geom_histogram(fill = "lightblue",      colour = "black", alpha = 0.3) + theme_light()
-w <- ggplot(ind_miss_05, aes(fmiss)) + geom_histogram(fill = "cornflowerblue", colour = "black", alpha = 0.3) + theme_light()
-x <- ggplot(ind_miss_06, aes(fmiss)) + geom_histogram(fill = "orange",         colour = "black", alpha = 0.3) + theme_light()
-y <- ggplot(ind_miss_07, aes(fmiss)) + geom_histogram(fill = "yellow",         colour = "black", alpha = 0.3) + theme_light()
-z <- ggplot(ind_miss_12, aes(fmiss)) + geom_histogram(fill = "green",          colour = "black", alpha = 0.3) + theme_light()
+a <- ggplot(ind_miss_04, aes(fmiss)) + geom_histogram(fill = "lightblue",      colour = "black", alpha = 0.3) + theme_light()
+b <- ggplot(ind_miss_05, aes(fmiss)) + geom_histogram(fill = "cornflowerblue", colour = "black", alpha = 0.3) + theme_light()
+c <- ggplot(ind_miss_06, aes(fmiss)) + geom_histogram(fill = "orange",         colour = "black", alpha = 0.3) + theme_light()
+d <- ggplot(ind_miss_07, aes(fmiss)) + geom_histogram(fill = "yellow",         colour = "black", alpha = 0.3) + theme_light()
+e <- ggplot(ind_miss_12, aes(fmiss)) + geom_histogram(fill = "green",          colour = "black", alpha = 0.3) + theme_light()
 
-fig6 <- ggarrange(v,w,x,y,z, ncol = 3, nrow = 2, 
+fig6 <- ggarrange(a,b,c,d,e, ncol = 3, nrow = 2, 
                   labels = c('04_samples', '05_samples', '06_samples', '07_samples', '12_samples'))
 fig6
 ```
@@ -853,15 +953,15 @@ loc_06[grep("942",   pca_06$ind)] <- "GER"
 loc_06[grep("900",   pca_06$ind)] <- "GER"
 loc_06[grep("TYGZ1", pca_06$ind)] <- "CHN"
 loc_06[grep("UGA55", pca_06$ind)] <- "USA"
-loc_06[grep("PAR", pca_06$ind)] <- "USA"
+loc_06[grep("PAR",   pca_06$ind)] <- "USA"
 
 loc_07[grep("866",   pca_07$ind)] <- "GER"
 loc_07[grep("942",   pca_07$ind)] <- "GER"
 loc_07[grep("900",   pca_07$ind)] <- "GER"
 loc_07[grep("TYGZ1", pca_07$ind)] <- "CHN"
 loc_07[grep("UGA55", pca_07$ind)] <- "USA"
-loc_07[grep("PAR", pca_07$ind)] <- "USA"
-loc_07[grep("HOM", pca_07$ind)] <- "NZ"
+loc_07[grep("PAR",   pca_07$ind)] <- "USA"
+loc_07[grep("HOM",   pca_07$ind)] <- "NZ"
 
 
 loc_12[grep("866",   pca_12$ind)] <- "GER"
@@ -869,8 +969,8 @@ loc_12[grep("942",   pca_12$ind)] <- "GER"
 loc_12[grep("900",   pca_12$ind)] <- "GER"
 loc_12[grep("TYGZ1", pca_12$ind)] <- "CHN"
 loc_12[grep("UGA55", pca_12$ind)] <- "USA"
-loc_12[grep("PAR", pca_12$ind)] <- "USA"
-loc_12[grep("HOM", pca_12$ind)] <- "NZ"
+loc_12[grep("PAR",   pca_12$ind)] <- "USA"
+loc_12[grep("HOM",   pca_12$ind)] <- "NZ"
 loc_12[grep("USA_P", pca_12$ind)] <- "USA"
 loc_12[grep("FRA_P", pca_12$ind)] <- "FRA"
 loc_12[grep("CHN_P", pca_12$ind)] <- "CHN"
@@ -902,15 +1002,15 @@ host_06[grep("942",   pca_06$ind)] <- "Mmd"
 host_06[grep("900",   pca_06$ind)] <- "Mmm"
 host_06[grep("TYGZ1", pca_06$ind)] <- "Mmm"
 host_06[grep("UGA55", pca_06$ind)] <- "Mmd"
-host_06[grep("PAR", pca_06$ind)] <- "Cattle"
+host_06[grep("PAR",   pca_06$ind)] <- "Cattle"
 
 host_07[grep("866",   pca_07$ind)] <- "Mmd"
 host_07[grep("942",   pca_07$ind)] <- "Mmd"
 host_07[grep("900",   pca_07$ind)] <- "Mmm"
 host_07[grep("TYGZ1", pca_07$ind)] <- "Mmm"
 host_07[grep("UGA55", pca_07$ind)] <- "Mmd"
-host_07[grep("PAR", pca_07$ind)] <- "Cattle"
-host_07[grep("HOM", pca_07$ind)] <- "Human"
+host_07[grep("PAR",   pca_07$ind)] <- "Cattle"
+host_07[grep("HOM",   pca_07$ind)] <- "Human"
 
 
 host_12[grep("866",   pca_12$ind)] <- "Mmd"
@@ -918,8 +1018,8 @@ host_12[grep("942",   pca_12$ind)] <- "Mmd"
 host_12[grep("900",   pca_12$ind)] <- "Mmm"
 host_12[grep("TYGZ1", pca_12$ind)] <- "Mmm"
 host_12[grep("UGA55", pca_12$ind)] <- "Mmd"
-host_12[grep("PAR", pca_12$ind)] <- "Cattle"
-host_12[grep("HOM", pca_12$ind)] <- "Human"
+host_12[grep("PAR",   pca_12$ind)] <- "Cattle"
+host_12[grep("HOM",   pca_12$ind)] <- "Human"
 host_12[grep("USA_P", pca_12$ind)] <- "Cattle"
 host_12[grep("FRA_P", pca_12$ind)] <- "Human"
 host_12[grep("CHN_P", pca_12$ind)] <- "Cattle"
@@ -951,23 +1051,21 @@ spp_06[grep("942",   pca_06$ind)] <- "C.tyzzeri"
 spp_06[grep("900",   pca_06$ind)] <- "C.tyzzeri"
 spp_06[grep("TYGZ1", pca_06$ind)] <- "C.tyzzeri"
 spp_06[grep("UGA55", pca_06$ind)] <- "C.tyzzeri"
-spp_06[grep("PAR", pca_06$ind)] <- "C.parvum"
+spp_06[grep("PAR",   pca_06$ind)] <- "C.parvum"
 
 spp_07[grep("866",   pca_07$ind)] <- "C.tyzzeri"
 spp_07[grep("942",   pca_07$ind)] <- "C.tyzzeri"
 spp_07[grep("900",   pca_07$ind)] <- "C.tyzzeri"
 spp_07[grep("TYGZ1", pca_07$ind)] <- "C.tyzzeri"
 spp_07[grep("UGA55", pca_07$ind)] <- "C.tyzzeri"
-spp_07[grep("PAR", pca_07$ind)] <- "C.parvum"
-spp_07[grep("HOM", pca_07$ind)] <- "C.hominis"
+spp_07[grep("PAR",   pca_07$ind)] <- "C.parvum"
+spp_07[grep("HOM",   pca_07$ind)] <- "C.hominis"
 
 spp_12[grep("866",   pca_12$ind)] <- "C.tyzzeri"
 spp_12[grep("942",   pca_12$ind)] <- "C.tyzzeri"
 spp_12[grep("900",   pca_12$ind)] <- "C.tyzzeri"
 spp_12[grep("TYGZ1", pca_12$ind)] <- "C.tyzzeri"
 spp_12[grep("UGA55", pca_12$ind)] <- "C.tyzzeri"
-spp_12[grep("PAR", pca_12$ind)] <- "C.parvum"
-spp_12[grep("HOM", pca_12$ind)] <- "C.hominis"
 spp_12[grep("USA_P", pca_12$ind)] <- "C.parvum"
 spp_12[grep("FRA_P", pca_12$ind)] <- "C.parvum"
 spp_12[grep("CHN_P", pca_12$ind)] <- "C.parvum"
