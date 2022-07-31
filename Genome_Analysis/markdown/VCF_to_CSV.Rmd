@@ -1,0 +1,109 @@
+---
+title: "PCA_individual_results"
+author: "Finn Lo"
+date: "2022-07-27"
+output: html_document
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libs, include = TRUE, echo = F, message=F, warning=F}
+library(tidyverse)
+library(knitr)
+library(ggpubr)
+library(readr)
+library(tibble)
+library(data.table)
+library(VariantAnnotation)
+library(ggVennDiagram)
+library(RColorBrewer)
+```
+
+``` {r, make-csv, echo = F, warning = F, message = F, include = F}
+# to use readVcf, the file must be gunzipped, as the function cannot read .vcf.gz files!
+#CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/05_samples_filtered_stats2_annotated.vcf")
+#CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/07_samples_filtered_stats2_annotated.vcf")
+#CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/07_samples_filtered_annotated.vcf")
+#CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/18_samples_filtered_stats2_annotated.vcf")
+
+
+AminoAcidChange <- as.data.frame(CollapsedVCF@info@listData[["AminoAcidChange"]])
+Locus           <- as.data.frame(CollapsedVCF@info@listData[["LocusTag"]]@unlistData)
+Product         <- as.data.frame(CollapsedVCF@info@listData[["Product"]]@unlistData)
+ProteinID       <- as.data.frame(CollapsedVCF@info@listData[["ProteinID"]]@unlistData)
+VariantType     <- as.data.frame(CollapsedVCF@info@listData[["VariantType"]]@unlistData)
+FeatureType     <- as.data.frame(CollapsedVCF@info@listData[["FeatureType"]]@unlistData)
+NAME            <- as.data.frame(CollapsedVCF@rowRanges@ranges@NAMES)
+START           <- as.data.frame(CollapsedVCF@rowRanges@ranges@start)
+WIDTH           <- as.data.frame(CollapsedVCF@rowRanges@ranges@width)
+QUAL            <- as.data.frame(CollapsedVCF@fixed@listData[["QUAL"]])
+
+# separate the NAMES column
+NAME <- setDT(NAME)[, paste0("CollapsedVCF@rowRanges@ranges@NAMES", 1:2) := tstrsplit(CollapsedVCF@rowRanges@ranges@NAMES, ":")]
+setnames(NAME, old = c("CollapsedVCF@rowRanges@ranges@NAMES1", "CollapsedVCF@rowRanges@ranges@NAMES2"), new = c("Chr", "Pos.REFALT"), skip_absent = T)
+NAME <- setDT(NAME)[, paste0("Pos.REFALT", 1:2) := tstrsplit(Pos.REFALT, "_")]
+setnames(NAME, old = c("Pos.REFALT1", "Pos.REFALT2"), new = c("Pos", "REF.ALT"), skip_absent = T)
+NAME <- setDT(NAME)[, paste0("REF.ALT", 1:2) := tstrsplit(REF.ALT, "/")]
+setnames(NAME, old = c("REF.ALT1", "REF.ALT2"), new = c("REF", "ALT"), skip_absent = T)
+NAME <- NAME %>% dplyr::select(Chr, REF, ALT)
+
+
+AminoAcidChange <- AminoAcidChange %>% dplyr::select(value)
+
+# combine the vectors
+CollapsedVCF <- cbind(Locus, Product, ProteinID, VariantType, FeatureType, NAME, AminoAcidChange, START, WIDTH, QUAL)
+
+# change column names
+colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["LocusTag"]]@unlistData'] <- 'GeneID'
+colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["ProteinID"]]@unlistData'] <- 'ProteinID'
+colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["VariantType"]]@unlistData'] <- 'VariantType'
+colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["FeatureType"]]@unlistData'] <- 'FeatureType'
+colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@info@listData[["Product"]]@unlistData'] <- 'Product'
+colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'value'] <- 'AminoAcidChange'
+colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@rowRanges@ranges@start'] <- 'START'
+colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@rowRanges@ranges@width'] <- 'WIDTH'
+colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@fixed@listData[["QUAL"]]'] <- 'QUAL'
+
+#write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/05_samples_stats2.csv")
+#write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples_stats2.csv")
+#write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples.csv")
+#write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/18_samples_stats2.csv")
+
+```
+
+################################################################################
+################################################################################
+################################################################################
+
+``` {r, intersect-genes, echo = F, warning = F, message = F}
+samples05  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/05_samples_stats2.csv")
+samples07  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples_stats2.csv")
+samples07b <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples.csv")
+samples18  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/18_samples_stats2.csv")
+
+# Which genes/SNPs cause high diversity in the sets?
+
+samples05 <- samples05 %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
+samples07 <- samples07 %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
+samples07b <- samples07b %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
+samples18 <- samples18 %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
+
+samples05 <- samples05 %>% filter(GeneID != '.')
+samples07 <- samples07 %>% filter(GeneID != '.')
+samples18 <- samples18 %>% filter(GeneID != '.')
+
+TYZ         <- unique(samples05$GeneID)
+TYZ_HOM     <- unique(samples18$GeneID)
+TYZ_PAR_HOM <- unique(samples07$GeneID)
+
+df1 <- data.frame(col = TYZ, TYZ)
+df2 <- data.frame(col = TYZ_HOM, TYZ_HOM)
+df3 <- data.frame(col = TYZ_PAR_HOM, TYZ_PAR_HOM)
+
+unique <- base::Reduce(function(x,y) merge(x,y, all=T), list(df1,df2,df3)) [,-1]
+
+d <- ggVennDiagram(unique, label_alpha = 0.7, show_intersect = T, edge_size = 0, label = "count")
+d
+```
