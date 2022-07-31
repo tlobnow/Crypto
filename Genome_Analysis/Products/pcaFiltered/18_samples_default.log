@@ -1,0 +1,30 @@
+PLINK v1.90b6.26 64-bit (2 Apr 2022)
+Options in effect:
+  --allow-extra-chr
+  --double-id
+  --indep-pairwise 50 10 0.1
+  --out 18_samples_default
+  --set-missing-var-ids @:#$1,$2
+  --vcf /SAN/Ctyzzeri/all/results/vcfDefault/18_samples_default.vcf.gz
+
+Hostname: harriet
+Working directory: /SAN/Ctyzzeri/all/scripts
+Start time: Thu Jul 28 16:38:42 2022
+
+Random number seed: 1659019122
+515931 MB RAM detected; reserving 257965 MB for main workspace.
+--vcf: 18_samples_default-temporary.bed + 18_samples_default-temporary.bim +
+18_samples_default-temporary.fam written.
+1 variant loaded from .bim file.
+1 missing ID set.
+18 people (0 males, 0 females, 18 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to 18_samples_default.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 18 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.944444.
+1 variant and 18 people pass filters and QC.
+Note: No phenotypes present.
+Error: Too few valid variants for --indep-pairwise.
+
+End time: Thu Jul 28 16:38:42 2022
