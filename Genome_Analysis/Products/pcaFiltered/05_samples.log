@@ -11,24 +11,24 @@ Options in effect:
 
 Hostname: harriet
 Working directory: /SAN/Ctyzzeri/all/scripts
-Start time: Sun Jul 24 22:46:07 2022
+Start time: Tue Jul 26 23:15:59 2022
 
-Random number seed: 1658695567
+Random number seed: 1658870159
 515931 MB RAM detected; reserving 257965 MB for main workspace.
 --vcf: /SAN/Ctyzzeri/all/results/pcaFiltered/05_samples-temporary.bed +
 /SAN/Ctyzzeri/all/results/pcaFiltered/05_samples-temporary.bim +
 /SAN/Ctyzzeri/all/results/pcaFiltered/05_samples-temporary.fam written.
-200 variants loaded from .bim file.
-200 missing IDs set.
+724 variants loaded from .bim file.
+724 missing IDs set.
 5 people (0 males, 0 females, 5 ambiguous) loaded from .fam.
 Ambiguous sex IDs written to
 /SAN/Ctyzzeri/all/results/pcaFiltered/05_samples.nosex .
---extract: 14 variants remaining.
+--extract: 34 variants remaining.
 Using up to 95 threads (change this with --threads).
 Before main variant filters, 5 founders and 0 nonfounders present.
 Calculating allele frequencies... done.
-Total genotyping rate is 0.814286.
-14 variants and 5 people pass filters and QC.
+Total genotyping rate is 0.8.
+34 variants and 5 people pass filters and QC.
 Note: No phenotypes present.
 Relationship matrix calculation complete.
 Warning: calculating 5 PCs, since there are only 5 samples.
@@ -39,4 +39,4 @@ Warning: calculating 5 PCs, since there are only 5 samples.
 /SAN/Ctyzzeri/all/results/pcaFiltered/05_samples.bim +
 /SAN/Ctyzzeri/all/results/pcaFiltered/05_samples.fam ... done.
 
-End time: Sun Jul 24 22:46:07 2022
+End time: Tue Jul 26 23:15:59 2022

@@ -1,7 +1,7 @@
-/SAN/Ctyzzeri/all/results/align/866.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/866.paired.trimmed_sort.bam -0.334388 0.261741 0.0808334 0.254247 -0.240839 0.814046 0.166811
-/SAN/Ctyzzeri/all/results/align/900.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/900.paired.trimmed_sort.bam -0.0873027 0.531608 0.367608 0.00785649 -0.426851 -0.25477 -0.572246
-/SAN/Ctyzzeri/all/results/align/942.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/942.paired.trimmed_sort.bam -0.127076 0.115756 -0.468883 -0.75691 0.0271227 0.268007 -0.324229
-/SAN/Ctyzzeri/all/results/align/HOM.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/HOM.paired.trimmed_sort.bam 0.478731 0.106225 -0.617088 0.495113 -0.104257 0.106668 -0.333693
-/SAN/Ctyzzeri/all/results/align/PAR.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/PAR.paired.trimmed_sort.bam 0.65636 -0.134985 0.501862 -0.187452 0.18159 0.422426 -0.229234
-/SAN/Ctyzzeri/all/results/align/TYGZ1.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/TYGZ1.paired.trimmed_sort.bam -0.287319 -0.771826 0.0456111 0.113574 -0.314664 0.0886613 -0.447079
-/SAN/Ctyzzeri/all/results/align/UGA55.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/UGA55.paired.trimmed_sort.bam -0.349099 0.101321 0.0611251 0.263077 0.784985 0.0539469 -0.419292
+/SAN/Ctyzzeri/all/results/align/866.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/866.paired.trimmed_sort.bam 0.265737 0.20581 0.39356 0.646917 0.135169 -0.399062 0.368936
+/SAN/Ctyzzeri/all/results/align/900.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/900.paired.trimmed_sort.bam 0.283035 -0.815437 -0.016123 -0.224648 0.0627175 -0.244137 0.375087
+/SAN/Ctyzzeri/all/results/align/942.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/942.paired.trimmed_sort.bam 0.0389553 0.245747 -0.859198 0.0783934 0.137472 -0.166398 0.383584
+/SAN/Ctyzzeri/all/results/align/HOM.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/HOM.paired.trimmed_sort.bam -0.510825 0.071697 0.0787772 -0.165684 -0.632494 -0.498902 0.226515
+/SAN/Ctyzzeri/all/results/align/PAR.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/PAR.paired.trimmed_sort.bam -0.66629 -0.185906 0.103643 0.207537 0.3072 0.416462 0.447069
+/SAN/Ctyzzeri/all/results/align/TYGZ1.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/TYGZ1.paired.trimmed_sort.bam 0.182492 0.438869 0.297435 -0.648689 0.206049 0.087749 0.463325
+/SAN/Ctyzzeri/all/results/align/UGA55.paired.trimmed_sort.bam /SAN/Ctyzzeri/all/results/align/UGA55.paired.trimmed_sort.bam 0.331014 -0.00241577 -0.0348361 0.183209 -0.649632 0.568695 0.331978

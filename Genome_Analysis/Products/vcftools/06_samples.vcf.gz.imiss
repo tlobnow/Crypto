@@ -1,7 +1,0 @@
-INDV	N_DATA	N_GENOTYPES_FILTERED	N_MISS	F_MISS
-/SAN/Ctyzzeri/all/results/align/866.paired.trimmed_sort.bam	57899	0	2527	0.043645
-/SAN/Ctyzzeri/all/results/align/900.paired.trimmed_sort.bam	57899	0	34781	0.600718
-/SAN/Ctyzzeri/all/results/align/942.paired.trimmed_sort.bam	57899	0	126	0.0021762
-/SAN/Ctyzzeri/all/results/align/PAR.paired.trimmed_sort.bam	57899	0	178	0.00307432
-/SAN/Ctyzzeri/all/results/align/TYGZ1.paired.trimmed_sort.bam	57899	0	141	0.00243528
-/SAN/Ctyzzeri/all/results/align/UGA55.paired.trimmed_sort.bam	57899	0	19	0.000328158
