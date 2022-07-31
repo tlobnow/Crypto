@@ -1,0 +1,22 @@
+PLINK v1.90b6.26 64-bit (2 Apr 2022)
+Options in effect:
+  --allow-extra-chr
+  --double-id
+  --extract /SAN/Ctyzzeri/all/results/pcaFiltered/00_fastqc.sh.prune.in
+  --make-bed
+  --out /SAN/Ctyzzeri/all/results/pcaFiltered/00_fastqc.sh
+  --pca
+  --set-missing-var-ids @:#$1,$2
+  --vcf /SAN/Ctyzzeri/all/results/vcfFiltered/sel/00_fastqc.sh_filtered.vcf.gz
+
+Hostname: harriet
+Working directory: /SAN/Ctyzzeri/all/scripts
+Start time: Tue Jul 26 15:50:33 2022
+
+Random number seed: 1658843433
+515931 MB RAM detected; reserving 257965 MB for main workspace.
+Error: Failed to open
+/SAN/Ctyzzeri/all/results/vcfFiltered/sel/00_fastqc.sh_filtered.vcf.gz. (--vcf
+expects a complete filename; did you forget '.vcf' at the end?)
+
+End time: Tue Jul 26 15:50:33 2022
