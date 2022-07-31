@@ -1,0 +1,50 @@
+PLINK v1.90b6.26 64-bit (2 Apr 2022)
+Options in effect:
+  --allow-extra-chr
+  --double-id
+  --extract /SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100.prune.in
+  --make-bed
+  --out /SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100
+  --pca
+  --set-missing-var-ids @:#$1,$2
+  --vcf /SAN/Ctyzzeri/all/results/vcfFiltered/05_samples_filtered_depth10.100.vcf.gz
+
+Hostname: harriet
+Working directory: /SAN/Ctyzzeri/all/scripts
+Start time: Fri Jul 29 08:59:13 2022
+
+Random number seed: 1659077953
+515931 MB RAM detected; reserving 257965 MB for main workspace.
+--vcf:
+/SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100-temporary.bed
++
+/SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100-temporary.bim
++
+/SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100-temporary.fam
+written.
+534 variants loaded from .bim file.
+534 missing IDs set.
+5 people (0 males, 0 females, 5 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to
+/SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100.nosex .
+--extract: 30 variants remaining.
+Using up to 95 threads (change this with --threads).
+Before main variant filters, 5 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.806667.
+30 variants and 5 people pass filters and QC.
+Note: No phenotypes present.
+Relationship matrix calculation complete.
+Warning: calculating 5 PCs, since there are only 5 samples.
+--pca: Results saved to
+/SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100.eigenval
+and
+/SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100.eigenvec
+.
+--make-bed to
+/SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100.bed +
+/SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100.bim +
+/SAN/Ctyzzeri/all/results/pcaFiltered/05_samples_filtered_depth10.100.fam ...
+done.
+
+End time: Fri Jul 29 08:59:13 2022

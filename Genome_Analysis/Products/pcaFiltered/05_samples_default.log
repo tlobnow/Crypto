@@ -1,0 +1,41 @@
+PLINK v1.90b6.26 64-bit (2 Apr 2022)
+Options in effect:
+  --allow-extra-chr
+  --double-id
+  --indep-pairwise 50 10 0.1
+  --out 05_samples_default
+  --set-missing-var-ids @:#$1,$2
+  --vcf /SAN/Ctyzzeri/all/results/vcfDefault/05_samples_defaultFilter.vcf.gz
+
+Hostname: harriet
+Working directory: /SAN/Ctyzzeri/all/scripts
+Start time: Thu Jul 28 10:03:25 2022
+
+Random number seed: 1658995405
+515931 MB RAM detected; reserving 257965 MB for main workspace.
+--vcf: 05_samples_default-temporary.bed + 05_samples_default-temporary.bim +
+05_samples_default-temporary.fam written.
+33 variants loaded from .bim file.
+33 missing IDs set.
+5 people (0 males, 0 females, 5 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to 05_samples_default.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 5 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is exactly 1.
+33 variants and 5 people pass filters and QC.
+Note: No phenotypes present.
+Pruned 2 variants from chromosome 27, leaving 1.
+Pruned 3 variants from chromosome 28, leaving 1.
+Pruned 3 variants from chromosome 29, leaving 2.
+Pruned 2 variants from chromosome 30, leaving 1.
+Pruned 4 variants from chromosome 31, leaving 2.
+Pruned 2 variants from chromosome 32, leaving 1.
+Pruned 3 variants from chromosome 33, leaving 1.
+Pruned 2 variants from chromosome 34, leaving 2.
+Pruned 0 variants from chromosome 35, leaving 1.
+Pruning complete.  21 of 33 variants removed.
+Marker lists written to 05_samples_default.prune.in and
+05_samples_default.prune.out .
+
+End time: Thu Jul 28 10:03:25 2022
