@@ -18,7 +18,7 @@ library(tibble)
 library(data.table)
 library(VariantAnnotation)
 library(ggVennDiagram)
-library(RColorBrewer)
+library(fishualize)
 ```
 
 ``` {r, make-csv, echo = F, warning = F, message = F, include = F}
@@ -104,6 +104,6 @@ df3 <- data.frame(col = TYZ_PAR_HOM, TYZ_PAR_HOM)
 
 unique <- base::Reduce(function(x,y) merge(x,y, all=T), list(df1,df2,df3)) [,-1]
 
-d <- ggVennDiagram(unique, label_alpha = 0.7, show_intersect = T, edge_size = 0, label = "count")
-d
+d <- ggVennDiagram(unique, label_alpha = 0.7, show_intersect = F, edge_size = 0, label = "count")
+d + scale_fill_fish(option = "Cirrhilabrus_solorensis") + theme(legend.position = "none")
 ```
