@@ -1,8 +1,8 @@
 INDV	N_DATA	N_GENOTYPES_FILTERED	N_MISS	F_MISS
-/SAN/Ctyzzeri/all/results/align/866.paired.trimmed_sort.bam	352408	0	15516	0.0440285
-/SAN/Ctyzzeri/all/results/align/900.paired.trimmed_sort.bam	352408	0	214199	0.607815
-/SAN/Ctyzzeri/all/results/align/942.paired.trimmed_sort.bam	352408	0	622	0.001765
-/SAN/Ctyzzeri/all/results/align/HOM.paired.trimmed_sort.bam	352408	0	4739	0.0134475
-/SAN/Ctyzzeri/all/results/align/PAR.paired.trimmed_sort.bam	352408	0	1570	0.00445506
-/SAN/Ctyzzeri/all/results/align/TYGZ1.paired.trimmed_sort.bam	352408	0	733	0.00207998
-/SAN/Ctyzzeri/all/results/align/UGA55.paired.trimmed_sort.bam	352408	0	129	0.000366053
+/SAN/Ctyzzeri/all/results/rmd/sel/866_sort.rmd.bam	351822	0	15602	0.0443463
+/SAN/Ctyzzeri/all/results/rmd/sel/900_sort.rmd.bam	351822	0	214106	0.608563
+/SAN/Ctyzzeri/all/results/rmd/sel/942_sort.rmd.bam	351822	0	626	0.00177931
+/SAN/Ctyzzeri/all/results/rmd/sel/NZL_H_sort.rmd.bam	351822	0	4755	0.0135154
+/SAN/Ctyzzeri/all/results/rmd/sel/TYGZ1_sort.rmd.bam	351822	0	715	0.00203228
+/SAN/Ctyzzeri/all/results/rmd/sel/UGA55_sort.rmd.bam	351822	0	128	0.00036382
+/SAN/Ctyzzeri/all/results/rmd/sel/USA_P_sort.rmd.bam	351822	0	1538	0.00437153

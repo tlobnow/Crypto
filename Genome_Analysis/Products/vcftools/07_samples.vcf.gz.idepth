@@ -1,8 +1,8 @@
 INDV	N_SITES	MEAN_DEPTH
-/SAN/Ctyzzeri/all/results/align/866.paired.trimmed_sort.bam	352408	14.7524
-/SAN/Ctyzzeri/all/results/align/900.paired.trimmed_sort.bam	352408	2.15343
-/SAN/Ctyzzeri/all/results/align/942.paired.trimmed_sort.bam	352408	18.0978
-/SAN/Ctyzzeri/all/results/align/HOM.paired.trimmed_sort.bam	352408	51.1135
-/SAN/Ctyzzeri/all/results/align/PAR.paired.trimmed_sort.bam	352408	218.965
-/SAN/Ctyzzeri/all/results/align/TYGZ1.paired.trimmed_sort.bam	352408	102.615
-/SAN/Ctyzzeri/all/results/align/UGA55.paired.trimmed_sort.bam	352408	107.614
+/SAN/Ctyzzeri/all/results/rmd/sel/866_sort.rmd.bam	351822	4.65579
+/SAN/Ctyzzeri/all/results/rmd/sel/900_sort.rmd.bam	351822	1.8363
+/SAN/Ctyzzeri/all/results/rmd/sel/942_sort.rmd.bam	351822	10.8529
+/SAN/Ctyzzeri/all/results/rmd/sel/NZL_H_sort.rmd.bam	351822	45.9435
+/SAN/Ctyzzeri/all/results/rmd/sel/TYGZ1_sort.rmd.bam	351822	91.7732
+/SAN/Ctyzzeri/all/results/rmd/sel/UGA55_sort.rmd.bam	351822	105.932
+/SAN/Ctyzzeri/all/results/rmd/sel/USA_P_sort.rmd.bam	351822	211.527

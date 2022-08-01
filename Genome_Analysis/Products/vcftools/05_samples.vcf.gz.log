@@ -16,4 +16,4 @@ Outputting Individual Heterozygosity
 	Individual Heterozygosity: Only using fully diploid SNPs.
 	Individual Heterozygosity: Only using biallelic SNPs.
 After filtering, kept 30515 out of a possible 30515 Sites
-Run Time = 0.00 seconds
+Run Time = 1.00 seconds
