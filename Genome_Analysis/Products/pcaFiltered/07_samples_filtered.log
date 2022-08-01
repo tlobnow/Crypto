@@ -1,0 +1,43 @@
+PLINK v1.90b6.26 64-bit (2 Apr 2022)
+Options in effect:
+  --allow-extra-chr
+  --double-id
+  --extract /SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered_stats2.prune.in
+  --make-bed
+  --out /SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered
+  --pca
+  --set-missing-var-ids @:#$1,$2
+  --vcf /SAN/Ctyzzeri/all/results/vcfFiltered/07_samples_filtered.vcf.gz
+
+Hostname: harriet
+Working directory: /SAN/Ctyzzeri/all/scripts
+Start time: Sun Jul 31 12:31:49 2022
+
+Random number seed: 1659263509
+515931 MB RAM detected; reserving 257965 MB for main workspace.
+--vcf: /SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered-temporary.bed
++ /SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered-temporary.bim +
+/SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered-temporary.fam
+written.
+4320 variants loaded from .bim file.
+4320 missing IDs set.
+7 people (0 males, 0 females, 7 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to
+/SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered.nosex .
+--extract: 36 variants remaining.
+Using up to 95 threads (change this with --threads).
+Before main variant filters, 7 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.880952.
+36 variants and 7 people pass filters and QC.
+Note: No phenotypes present.
+Relationship matrix calculation complete.
+Warning: calculating 7 PCs, since there are only 7 samples.
+--pca: Results saved to
+/SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered.eigenval and
+/SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered.eigenvec .
+--make-bed to /SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered.bed +
+/SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered.bim +
+/SAN/Ctyzzeri/all/results/pcaFiltered/07_samples_filtered.fam ... done.
+
+End time: Sun Jul 31 12:31:49 2022

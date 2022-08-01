@@ -1,0 +1,10 @@
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--gzvcf /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/products/vcf/06_samples.vcf.gz
+	--het
+	--out /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/products/vcftools/06_samples.vcf.gz
+
+Error: Can't determine file type of /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/products/vcf/06_samples.vcf.gz
