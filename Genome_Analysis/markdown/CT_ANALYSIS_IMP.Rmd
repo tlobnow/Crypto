@@ -17,6 +17,8 @@ library(readr)
 library(tibble)
 library(leaflet)
 library(htmltools)
+library(ggVennDiagram)
+library(fishualize)
 ```
 
 # THE ISOLATES
@@ -565,11 +567,11 @@ var_miss_05 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vc
 ind_miss_05 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
 
 a <- ggplot(var_qual_05, aes(qual)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)+ ylim(0,0.025)
-b <- ggplot(var_freq_05, aes(maf)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light()+ ylim(0,50)
-c <- ggplot(var_depth_05, aes(mean_depth)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light() + ylim(0,0.025)
-d <- ggplot(ind_depth_05, aes(depth)) + geom_histogram(fill = "red",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200) + ylim(0,3)
-e <- ggplot(var_miss_05, aes(fmiss)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light()  + xlim(0,0.8) + ylim(0,60)
-f <- ggplot(ind_miss_05, aes(fmiss)) + geom_histogram(fill = "red",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,1) + ylim(0,3)
+b <- ggplot(var_freq_05, aes(maf)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light()#+ ylim(0,50)
+c <- ggplot(var_depth_05, aes(mean_depth)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light()# + ylim(0,0.025)
+d <- ggplot(ind_depth_05, aes(depth)) + geom_histogram(fill = "red",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200) #+ ylim(0,3)
+e <- ggplot(var_miss_05, aes(fmiss)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light()  + xlim(0,0.8) #+ ylim(0,60)
+f <- ggplot(ind_miss_05, aes(fmiss)) + geom_histogram(fill = "red",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,1) #+ ylim(0,3)
 
 stats5 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, 
                   labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 
@@ -591,14 +593,14 @@ ind_depth_07 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/v
 var_miss_07 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/07_samples.vcf.gz.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
 ind_miss_07 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/07_samples.vcf.gz.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
 
-a <- ggplot(var_qual_07, aes(qual)) +        geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)+ ylim(0,0.025)
-b <- ggplot(var_freq_07, aes(maf)) +         geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light()+ ylim(0,50)
+a <- ggplot(var_qual_07, aes(qual)) +        geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)#+ ylim(0,0.025)
+b <- ggplot(var_freq_07, aes(maf)) +         geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light()#+ ylim(0,50)
 
-c <- ggplot(var_depth_07, aes(mean_depth)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() + ylim(0,0.025)
-d <- ggplot(ind_depth_07, aes(depth)) +      geom_histogram(fill = "green",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200) + ylim(0,3)
+c <- ggplot(var_depth_07, aes(mean_depth)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() #+ ylim(0,0.025)
+d <- ggplot(ind_depth_07, aes(depth)) +      geom_histogram(fill = "green",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200) #+ ylim(0,3)
 
-e <- ggplot(var_miss_07, aes(fmiss)) +       geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8) + ylim(0,60)
-f <- ggplot(ind_miss_07, aes(fmiss)) + geom_histogram(fill = "green",      colour = "black", alpha = 0.3) + theme_light()+ xlim(0,1) + ylim(0,3)
+e <- ggplot(var_miss_07, aes(fmiss)) +       geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8) #+ ylim(0,60)
+f <- ggplot(ind_miss_07, aes(fmiss)) + geom_histogram(fill = "green",      colour = "black", alpha = 0.3) + theme_light()+ xlim(0,1) #+ ylim(0,3)
 
 stats7 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, 
                   labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 
@@ -621,12 +623,12 @@ ind_depth_18 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/v
 var_miss_18 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/18_samples.vcf.gz.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
 ind_miss_18 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/18_samples.vcf.gz.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
 
-a <- ggplot(var_qual_18, aes(qual)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000) + ylim(0,0.025)
+a <- ggplot(var_qual_18, aes(qual)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000) #+ ylim(0,0.025)
 b <- ggplot(var_freq_18, aes(maf)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light()+ ylim(0,50)
-c <- ggplot(var_depth_18, aes(mean_depth)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + ylim(0,0.025)
-d <- ggplot(ind_depth_18, aes(depth)) + geom_histogram(fill = "blue",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200) + ylim(0,3)
-e <- ggplot(var_miss_18, aes(fmiss)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8) + ylim(0,60)
-f <- ggplot(ind_miss_18, aes(fmiss)) + geom_histogram(fill = "blue",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,1) + ylim(0,3)
+c <- ggplot(var_depth_18, aes(mean_depth)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light()# + ylim(0,0.025)
+d <- ggplot(ind_depth_18, aes(depth)) + geom_histogram(fill = "blue",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200) #+ ylim(0,3)
+e <- ggplot(var_miss_18, aes(fmiss)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8) #+ ylim(0,60)
+f <- ggplot(ind_miss_18, aes(fmiss)) + geom_histogram(fill = "blue",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,1) #+ ylim(0,3)
 
 stats18 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, 
                   labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 
@@ -690,24 +692,25 @@ Now we have an idea of how to set out thresholds, we will do just that and filte
 ``` {r, ALL-STATS-SUMMARY-FILTERS, echo = F, warning = F, message = F}
 # 05_samples
 a <- ggplot(var_qual_05, aes(qual)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,1000)+ ylim(0,0.025) + geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
+  theme_light() + xlim(0,1000) +#+ ylim(0,0.025) + 
+geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
 b <- ggplot(var_freq_05, aes(maf)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + 
-  theme_light() + ylim(0,50)
+  theme_light() #+ ylim(0,50)
 
 c <- ggplot(var_depth_05, aes(mean_depth)) + geom_density(fill = "red", colour = "black", alpha = 0.3) +
-  theme_light() + ylim(0,0.025) + 
+  theme_light()+ #+ ylim(0,0.025) + 
   geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none") +
   geom_vline(aes(xintercept = 2*42.82), color = "green", size = 1.2) + theme(legend.position = "none")
 
 d <- ggplot(ind_depth_05, aes(depth)) + geom_histogram(fill = "red", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,200) + ylim(0,3)
+  theme_light() + xlim(0,200) #+ ylim(0,3)
 
 e <- ggplot(var_miss_05, aes(fmiss)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,0.8) + ylim(0,60)+
+  theme_light() + xlim(0,0.8)+ #+ ylim(0,60)+
   geom_vline(aes(xintercept = 0.15), color = "green", size = 1.2) + theme(legend.position = "none")
 
 f <- ggplot(ind_miss_05, aes(fmiss)) + geom_histogram(fill = "red", colour = "black", alpha = 0.3) +
-  theme_light() + xlim(0,1) + ylim(0,3)
+  theme_light() + xlim(0,1) #+ ylim(0,3)
 
 stats5 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 'Mean Depth per individual', 'Variant Missingness', 'Missing data per individual'),font.label = c(size = 10))
 
@@ -717,25 +720,26 @@ annotate_figure(stats5, top = text_grob("C.tyz (n = 5) filters set", color = "bl
 
 # 07_samples
 a <- ggplot(var_qual_07, aes(qual)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,1000)+ ylim(0,0.025) + geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
+  theme_light() + xlim(0,1000)+# ylim(0,0.025) + 
+geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
 
 b <- ggplot(var_freq_07, aes(maf)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + 
-  theme_light() + ylim(0,50)
+  theme_light() #+ ylim(0,50)
 
 c <- ggplot(var_depth_07, aes(mean_depth)) + geom_density(fill = "green", colour = "black", alpha = 0.3) +
-  theme_light() + ylim(0,0.025) + 
+  theme_light() + #+ ylim(0,0.025) + 
   geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none") +
   geom_vline(aes(xintercept = 2*67.5032), color = "green", size = 1.2) + theme(legend.position = "none")
 
 d <- ggplot(ind_depth_07, aes(depth)) + geom_histogram(fill = "green", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,200) + ylim(0,3)
+  theme_light() + xlim(0,200) #+ ylim(0,3)
 
 e <- ggplot(var_miss_07, aes(fmiss)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,0.8) + ylim(0,60)+
+  theme_light() + xlim(0,0.8)+ #+ ylim(0,60)+
   geom_vline(aes(xintercept = 0.1), color = "green", size = 1.2) + theme(legend.position = "none")
 
 f <- ggplot(ind_miss_07, aes(fmiss)) + geom_histogram(fill = "green", colour = "black", alpha = 0.3) +
-  theme_light() + xlim(0,1) + ylim(0,3)
+  theme_light() + xlim(0,1) #+ ylim(0,3)
 
 stats7 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 'Mean Depth per individual', 'Variant Missingness', 'Missing data per individual'),font.label = c(size = 10))
 
@@ -745,26 +749,27 @@ annotate_figure(stats7, top = text_grob("C.tyz + C.par + C.hom (n = 7)", color =
 
 # 18_samples
 a <- ggplot(var_qual_18, aes(qual)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,1000)+ ylim(0,0.025) + geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
+  theme_light() + xlim(0,1000)+# ylim(0,0.025) + 
+  geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
 
 b <- ggplot(var_freq_18, aes(maf)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + 
-  theme_light() + ylim(0,50)
+  theme_light() #+ ylim(0,50)
 
 c <- ggplot(var_depth_18, aes(mean_depth)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) +
-  theme_light() + ylim(0,0.025) + 
+  theme_light() +#+ ylim(0,0.025) + 
   geom_vline(aes(xintercept = 10), color = "green", size = 1.2) +
   geom_vline(aes(xintercept = 2*80.51647), color = "green", size = 1.2) + 
   theme(legend.position = "none")
 
 d <- ggplot(ind_depth_18, aes(depth)) + geom_histogram(fill = "blue", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,200) + ylim(0,3)
+  theme_light() + xlim(0,200) #+ ylim(0,3)
 
 e <- ggplot(var_miss_18, aes(fmiss)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,0.8) + ylim(0,60)+
+  theme_light() + xlim(0,0.8)+ #+ ylim(0,60)+
   geom_vline(aes(xintercept = 0.1), color = "green", size = 1.2) + theme(legend.position = "none")
 
 f <- ggplot(ind_miss_18, aes(fmiss)) + geom_histogram(fill = "blue", colour = "black", alpha = 0.3) +
-  theme_light() + xlim(0,1) + ylim(0,3)
+  theme_light() + xlim(0,1) #+ ylim(0,3)
 
 stats18 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 'Mean Depth per individual', 'Variant Missingness', 'Missing data per individual'),font.label = c(size = 10))
 
@@ -1473,3 +1478,210 @@ h
 #plot2 <- ggarrange(g,h, ncol = 2, nrow = 1, labels = c('Variance explained [%]', 'PCA'), font.label = c(size = 10))
 #annotate_figure(plot2, top = text_grob("PCA C.tyzzeri vs. C.parvum (n = 18)", color = "black", face = "bold", size = 14))
 ```
+
+## Genes in filtered, pruned VCF --> divergent, unlinked genes that impact PCA
+
+``` {r, intersect-genes, echo = F, warning = F, message = F}
+samples05  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/05_samples_stats2.csv")
+samples07  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples_stats2.csv")
+samples07b <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples.csv")
+samples18  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/18_samples_stats2.csv")
+
+# Which genes/SNPs cause high diversity in the sets?
+
+#samples05 <- samples05 %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
+#samples07 <- samples07 %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
+#samples07b <- samples07b %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
+#samples18 <- samples18 %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
+
+samples05 <- samples05 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, Product) %>% distinct()
+samples07 <- samples07 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, Product) %>% distinct()
+samples18 <- samples18 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, Product) %>% distinct()
+samples <- full_join(samples05, samples07)
+samples <- full_join(samples, samples18)
+
+TYZ    <- unique(samples05$GeneID)
+TP     <- unique(samples18$GeneID)
+TPH    <- unique(samples07$GeneID)
+
+df1 <- data.frame(GeneID = TYZ, TYZ)
+df2 <- data.frame(GeneID = TP, TP)
+df3 <- data.frame(GeneID = TPH, TPH)
+
+unique <- base::Reduce(function(x,y) merge(x,y, all=T), list(df1,df2,df3)) [,-1]
+
+ggVennDiagram(unique, label_alpha = 0.7, show_intersect = F, edge_size = 0, label = "count") +
+  scale_fill_fish(option = "Cirrhilabrus_solorensis") + theme(legend.position = "none")
+
+unique <- unique %>%
+  mutate(incl_in = case_when(!is.na(TYZ) & !is.na(TP) & !is.na(TPH)  ~ 3,
+                             !is.na(TYZ) & is.na(TP)  & is.na(TPH)   ~ 1,
+                             is.na(TYZ)  & !is.na(TP) & is.na(TPH)   ~ 1,
+                             is.na(TYZ)  & is.na(TP)  & !is.na(TPH)  ~ 1,
+                             !is.na(TYZ) & !is.na(TP) & is.na(TPH)   ~ 2,
+                             !is.na(TYZ) & is.na(TP)  & !is.na(TPH)  ~ 2,
+                             is.na(TYZ)  & !is.na(TP) & !is.na(TPH)  ~ 2),
+         GeneID = case_when(!is.na(TYZ) ~ TYZ, !is.na(TP)  ~ TP, !is.na(TPH) ~ TPH),
+         TYZ = case_when(!is.na(TYZ) ~ T, is.na(TYZ) ~ F),
+         TP  = case_when(!is.na(TP)  ~ T, is.na(TP)  ~ F),
+         TPH = case_when(!is.na(TPH) ~ T, is.na(TPH) ~ F)) %>% 
+  dplyr::select(GeneID, TYZ, TP, TPH, incl_in)
+
+common <- left_join(unique, samples) %>% filter(incl_in == 3)
+
+kable(common)
+```
+
+# Detecting Structure with ADMIXTURE
+
+ADMIXTURE is a clustering software similar to STRUCTURE with the aim to infer populations and individual ancestries.
+    
+Prepare cluster analysis via filtered vcf files.
+
+    13_admixture_prep.sh
+    
+    #!/usr/bin/env bash
+
+    # FILE=05_samples_filtered_stats2
+    # FILE=07_samples_filtered_stats2
+    # FILE=18_samples_filtered_stats2
+
+    # Generate the input file in plink format
+    plink --vcf ~/Documents/Github/Crypto/GenomeAnalysis/products/vcfFiltered/$FILE.vcf.gz \
+    --make-bed --out $FILE --allow-extra-chr --const-fid 0
+
+    # ADMIXTURE does not accept chromosome names that are not human chromosomes. We will thus just exchange the first column by 0
+    awk '{$1="0";print $0}' $FILE.bim > $FILE.bim.tmp
+    mv $FILE.bim.tmp $FILE.bim
+    
+
+Execute individual lines or loop over K=3 to K=5 and generate log files.
+
+    14_admixture_A.sh
+    
+    #!/usr/bin/env bash
+    FILE=~/Documents/Github/Crypto/Genome_Analysis/products/admixture/05_samples_filtered_stats2
+
+    admixture --cv $FILE.bed 2 > log2.out
+    admixture --cv $FILE.bed 3 > log3.out
+    admixture --cv $FILE.bed 4 > log4.out
+    admixture --cv $FILE.bed 5 > log5.out
+
+    FILE=~/Documents/Github/Crypto/Genome_Analysis/products/admixture/07_samples_filtered_stats2
+
+    admixture --cv $FILE.bed 2 > log2.out
+    admixture --cv $FILE.bed 3 > log3.out
+    admixture --cv $FILE.bed 4 > log4.out
+    admixture --cv $FILE.bed 5 > log5.out
+
+    FILE=~/Documents/Github/Crypto/Genome_Analysis/products/admixture/18_samples_filtered_stats2
+
+    admixture --cv $FILE.bed 2 > log2.out
+    admixture --cv $FILE.bed 3 > log3.out
+    admixture --cv $FILE.bed 4 > log4.out
+    admixture --cv $FILE.bed 5 > log5.out
+    
+    ----------------------------------------------------------------------------
+    
+    for i in {3..5}
+    do
+      admixture --cv $FILE.bed $i > log${i}.out
+    done
+
+ADMIXTURE produced 2 files: .Q which contains cluster assignments for each individual and .P which contains for each SNP the population allele frequencies.
+
+To identify the best value of k clusters which is the value with lowest cross-validation error, we need to collect the cv errors. Below are three different ways to extract the number of K and the CV error for each corresponding K.
+
+    grep "CV" *out | awk '{print $3,$4}' | sed -e 's/(//;s/)//;s/://;s/K=//'  > $FILE.cv.error
+OR
+
+    grep "CV" *out | awk '{print $3,$4}' | cut -c 4,7-20 > $FILE.cv.error
+OR
+
+    awk '/CV/ {print $3,$4}' *out | cut -c 4,7-20 > $FILE.cv.error
+
+The cv errors of all three PCAs indicate that K=4 is the best value of clusters.
+
+``` {r, cv-errors, echo = F, message = F, warning = F}
+a <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/admixture/05_samples_filtered_stats2.cv.error",header = F, sep = '\t', col.names = "cv_error_05_samples")
+b <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/admixture/07_samples_filtered_stats2.cv.error",header = F, sep = '\t', col.names = "cv_error_07_samples")
+c <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/admixture/18_samples_filtered_stats2.cv.error",header = F, sep = '\t', col.names = "cv_error_18_samples")
+
+cv_error <- bind_cols(a,b,c)
+
+kable(cv_error)
+
+```
+
+To make plotting easier, we can make a file with the individual names in one column and the species names in the second column.
+It should look somewhat like this:
+
+Ind       Species
+
+866       TYZ1
+
+900       TYZ2
+
+942       TYZ3
+
+NZL_H     HOM
+
+TYGZ1     TYZ4
+
+UGA55     TYZ5
+
+USA_P     PAR
+
+
+The following R script was written by Joana Meier in 2019 and helps to generate plot. It requires four arguments:
+
+    wget https://github.com/speciationgenomics/scripts/raw/master/plotADMIXTURE.r
+    chmod +x plotADMIXTURE.r
+
+1. the prefix for the ADMIXTURE output files (-p )
+2. the file with the species information (-i )
+3. the maximum number of K to be plotted (-k 5)
+4. and a list with the populations or species separated by commas (-l <pop1,pop2...>). 
+
+The list of populations provided with -l gives the order in which the populations or species shall be plotted. Note, that alternatively, if working with your own data, you could also try [this](https://github.com/ramachandran-lab/pong/blob/master/pong-manual.pdf) for plotting.
+
+The script by Joana Meier can be run like this:
+
+    #!/usr/bin/env bash
+
+    FILE=05_samples_filtered_stats2
+
+    Rscript plotADMIXTURE.r \
+    -p ~/Documents/Github/Crypto/Genome_Analysis/products/admixture/$FILE \
+    -i ~/Documents/Github/Crypto/Genome_Analysis/products/admixture/$FILE.list \
+    -k 5 -l TYZ1,TYZ2,TYZ3,TYZ4,TYZ5
+
+
+    FILE=07_samples_filtered_stats2
+
+    Rscript plotADMIXTURE.r \
+    -p ~/Documents/Github/Crypto/Genome_Analysis/products/admixture/$FILE \
+    -i ~/Documents/Github/Crypto/Genome_Analysis/products/admixture/$FILE.list \
+    -k 5 -l TYZ1,TYZ2,TYZ3,HOM,TYZ4,TYZ5,PAR
+
+
+    FILE=18_samples_filtered_stats2
+
+    Rscript plotADMIXTURE.r \
+    -p ~/Documents/Github/Crypto/Genome_Analysis/products/admixture/$FILE \
+    -i ~/Documents/Github/Crypto/Genome_Analysis/products/admixture/$FILE.list \
+    -k 5 -l CHN_C_GU1,CHN_C_GU2,CHN_C_GU3,CHN_C_SH1,CHN_C_SH2,CHN_M_GU,EUR_C_CZ,EUR_H_CZ,EUR_M_866,EUR_M_900,EUR_M_942,USA_C_WA1,USA_C_WA2,USA_C_WI,USA_H_AL1,USA_H_AL2,USA_H_OR,USA_M_GA
+    
+#### Clustering of TYZ internal (05_samples)
+
+![Clustering of TYZ internal (05_samples)](~/Documents/Github/Crypto/Genome_Analysis/products/admixture/05_samples_k5.tiff)
+
+#### Clustering of TYZ-PAR-HOM (07_samples)
+
+![Clustering of TYZ-PAR-HOM (07_samples)](~/Documents/Github/Crypto/Genome_Analysis/products/admixture/07_samples_k5.tiff)
+
+#### Clustering TYZ-PAR (18_samples)
+
+![Clustering TYZ-PAR (18_samples)](~/Documents/Github/Crypto/Genome_Analysis/products/admixture/18_samples_k5.tiff)
+
+

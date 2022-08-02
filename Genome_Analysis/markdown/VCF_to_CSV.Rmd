@@ -85,25 +85,38 @@ samples18  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/1
 
 # Which genes/SNPs cause high diversity in the sets?
 
-samples05 <- samples05 %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
-samples07 <- samples07 %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
-samples07b <- samples07b %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
-samples18 <- samples18 %>% dplyr::select(GeneID, REF, ALT, START) %>% group_by(GeneID)
-
-samples05 <- samples05 %>% filter(GeneID != '.')
-samples07 <- samples07 %>% filter(GeneID != '.')
-samples18 <- samples18 %>% filter(GeneID != '.')
+samples05 <- samples05 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, Product) %>% distinct()
+samples07 <- samples07 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, Product) %>% distinct()
+samples18 <- samples18 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, Product) %>% distinct()
+samples <- full_join(samples05, samples07)
+samples <- full_join(samples, samples18)
 
 TYZ         <- unique(samples05$GeneID)
-TYZ_HOM     <- unique(samples18$GeneID)
+TYZ_PAR     <- unique(samples18$GeneID)
 TYZ_PAR_HOM <- unique(samples07$GeneID)
 
 df1 <- data.frame(col = TYZ, TYZ)
-df2 <- data.frame(col = TYZ_HOM, TYZ_HOM)
+df2 <- data.frame(col = TYZ_PAR, TYZ_PAR)
 df3 <- data.frame(col = TYZ_PAR_HOM, TYZ_PAR_HOM)
 
 unique <- base::Reduce(function(x,y) merge(x,y, all=T), list(df1,df2,df3)) [,-1]
 
-d <- ggVennDiagram(unique, label_alpha = 0.7, show_intersect = F, edge_size = 0, label = "count")
-d + scale_fill_fish(option = "Cirrhilabrus_solorensis") + theme(legend.position = "none")
+ggVennDiagram(unique, label_alpha = 0.7, show_intersect = F, edge_size = 0, label = "count") +
+  scale_fill_fish(option = "Cirrhilabrus_solorensis") + theme(legend.position = "none")
+
+unique <- unique %>%
+  mutate(incl_in = case_when(!is.na(TYZ) & !is.na(TP) & !is.na(TPH)  ~ 3,
+                             !is.na(TYZ) & is.na(TP)  & is.na(TPH)   ~ 1,
+                             is.na(TYZ)  & !is.na(TP) & is.na(TPH)   ~ 1,
+                             is.na(TYZ)  & is.na(TP)  & !is.na(TPH)  ~ 1,
+                             !is.na(TYZ) & !is.na(TP) & is.na(TPH)   ~ 2,
+                             !is.na(TYZ) & is.na(TP)  & !is.na(TPH)  ~ 2,
+                             is.na(TYZ)  & !is.na(TP) & !is.na(TPH)  ~ 2),
+         GeneID = case_when(!is.na(TYZ) ~ TYZ, !is.na(TP)  ~ TP, !is.na(TPH) ~ TPH),
+         TYZ = case_when(!is.na(TYZ) ~ T, is.na(TYZ) ~ F),
+         TP  = case_when(!is.na(TP)  ~ T, is.na(TP)  ~ F),
+         TPH = case_when(!is.na(TPH) ~ T, is.na(TPH) ~ F)) %>% 
+  dplyr::select(GeneID, TYZ, TP, TPH, incl_in)
+
+common <- left_join(unique, samples) %>% filter(incl_in == 3)
 ```
