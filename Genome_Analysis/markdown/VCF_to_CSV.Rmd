@@ -23,10 +23,15 @@ library(fishualize)
 
 ``` {r, make-csv, echo = F, warning = F, message = F, include = F}
 # to use readVcf, the file must be gunzipped, as the function cannot read .vcf.gz files!
+
 #CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/05_samples_filtered_stats2_annotated.vcf")
 #CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/07_samples_filtered_stats2_annotated.vcf")
 #CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/07_samples_filtered_annotated.vcf")
 #CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/18_samples_filtered_stats2_annotated.vcf")
+#CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/05_samples_unfiltered_annotated.vcf")
+#CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/07_samples_unfiltered_annotated.vcf")
+CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/18_samples_unfiltered_annotated.vcf")
+
 
 
 AminoAcidChange <- as.data.frame(CollapsedVCF@info@listData[["AminoAcidChange"]])
@@ -70,6 +75,10 @@ colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@fixed@listData[
 #write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples_stats2.csv")
 #write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples.csv")
 #write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/18_samples_stats2.csv")
+#write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/05_samples_unfiltered.csv")
+#write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples_unfiltered.csv")
+write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/18_samples_unfiltered.csv")
+
 
 ```
 

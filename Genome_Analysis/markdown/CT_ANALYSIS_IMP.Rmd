@@ -1528,8 +1528,10 @@ unique <- unique %>%
   dplyr::select(GeneID, TYZ, TP, TPH, incl_in)
 
 common <- left_join(unique, samples) %>% filter(incl_in == 3)
-
 kable(common)
+
+
+
 ```
 
 # Detecting Structure with ADMIXTURE
