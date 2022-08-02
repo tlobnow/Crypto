@@ -1,0 +1,30 @@
+PLINK v1.90b6.26 64-bit (2 Apr 2022)
+Options in effect:
+  --allow-extra-chr
+  --const-fid 0
+  --make-bed
+  --out 05_samples_filtered_stats2
+  --vcf /SAN/Ctyzzeri/all/results/vcfFiltered/05_samples_filtered_stats2.vcf.gz
+
+Hostname: harriet
+Working directory: /SAN/Ctyzzeri/all/scripts
+Start time: Mon Aug  1 18:44:49 2022
+
+Random number seed: 1659372289
+515931 MB RAM detected; reserving 257965 MB for main workspace.
+--vcf: 05_samples_filtered_stats2-temporary.bed +
+05_samples_filtered_stats2-temporary.bim +
+05_samples_filtered_stats2-temporary.fam written.
+68 variants loaded from .bim file.
+5 people (0 males, 0 females, 5 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to 05_samples_filtered_stats2.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 5 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is exactly 1.
+68 variants and 5 people pass filters and QC.
+Note: No phenotypes present.
+--make-bed to 05_samples_filtered_stats2.bed + 05_samples_filtered_stats2.bim +
+05_samples_filtered_stats2.fam ... done.
+
+End time: Mon Aug  1 18:44:49 2022
