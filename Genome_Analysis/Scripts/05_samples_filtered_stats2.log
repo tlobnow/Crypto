@@ -1,0 +1,18 @@
+PLINK v1.90b4 64-bit (20 Mar 2017)
+Options in effect:
+  --allow-extra-chr
+  --make-bed
+  --out /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/scripts/05_samples_filtered_stats2
+  --vcf /home/data/vcf//Users/finnlo/Documents/Github/Crypto/Genome_Analysis/scripts/05_samples_filtered_stats2.vcf.gz
+
+Hostname: Finns-Air
+Working directory: /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/products/admixture
+Start time: Mon Aug  1 21:13:42 2022
+
+Random number seed: 1659381222
+4096 MB RAM detected; reserving 2048 MB for main workspace.
+Error: Failed to open
+/home/data/vcf//Users/finnlo/Documents/Github/Crypto/Genome_Analysis/scripts/05_samples_filtered_stats2.vcf.gz.
+(--vcf expects a complete filename; did you forget '.vcf' at the end?)
+
+End time: Mon Aug  1 21:13:42 2022
