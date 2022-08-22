@@ -19,6 +19,8 @@ library(leaflet)
 library(htmltools)
 library(ggVennDiagram)
 library(fishualize)
+#library(devtools)#install_github("vqv/ggbiplot")
+library(ggbiplot)
 ```
 
 # THE ISOLATES
@@ -299,7 +301,7 @@ Following these options, we then specify the reference genome, the forward reads
     
 Alternatively, this can be run in parallel after specification of all individuals in a list:
 
-    for i in /SAN/Ctyzzeri/all/fastq/*1.fastq.gz; do echo $(basename -a -s _1.fastq.gz $i); done > inds
+    for i in /SAN/Ctyzzeri/all/results/filteredReads/*.trimmed.R1.fastq.gz; do echo $(basename -a -s .trimmed.R1.fastq.gz $i); done > inds
     
 The script can be run using `parallel 'sh 03_parallel_align.sh {}' :::: inds`
 
@@ -493,6 +495,7 @@ Usually then, it is best practice to produce one dataset with a good MAF thresho
     summary(var_freq_05$maf) # Mean = 0.289     --> ?
     summary(var_freq_07$maf) # Mean = 0.212     --> ?
     summary(var_freq_18$maf) # Mean = 0.235     --> ?
+    summary(var_freq_38$maf) # Mean = 0.235     --> ?
 
 - (MAF=0.1) or (MAF=0.05) <- I'm not sure if/how to set this filter.
 
@@ -512,9 +515,10 @@ What is more important here is that we set a good maximum depth cufoff. As the o
     summary(var_depth_05$mean_depth) # Mean = 42.82     x 2 =  85.64
     summary(var_depth_07$mean_depth) # Mean = 67.5032   x 2 = 135.01
     summary(var_depth_18$mean_depth) # Mean = 80.51647  x 2 = 161.03
+    summary(var_depth_38$mean_depth) # Mean = 97.91384  x 2 = 195.83
 
 - MIN_DEPTH = 10
-- MAX_DEPTH = 85.64 / 135.01 / 161.03
+- MAX_DEPTH = 85.64 / 135.01 / 161.03 / 195.83
 
 ##### MISSINGNESS:
 
@@ -527,8 +531,9 @@ The results indicate relatively high missingness, especially among _C.tyzzeri_ s
     summary(var_miss_05$fmiss) # Mean = 0.12570     --> MISS=0.85
     summary(var_miss_07$fmiss) # Mean = 0.09642     --> MISS=0.90
     summary(var_miss_18$fmiss) # Mean = 0.06108     --> MISS=0.90
+    summary(var_miss_38$fmiss) # Mean = 0.03957     --> MISS=0.90
 
-- MISS = 0.85 / 0.9 / 0.9
+- MISS = 0.85 / 0.9 / 0.9 / 0.9
 
 ### Individual based statistics
 
@@ -566,12 +571,12 @@ ind_depth_05 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/v
 var_miss_05 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
 ind_miss_05 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/05_samples.vcf.gz.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
 
-a <- ggplot(var_qual_05, aes(qual)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)+ ylim(0,0.025)
-b <- ggplot(var_freq_05, aes(maf)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light()#+ ylim(0,50)
-c <- ggplot(var_depth_05, aes(mean_depth)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light()# + ylim(0,0.025)
-d <- ggplot(ind_depth_05, aes(depth)) + geom_histogram(fill = "red",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200) #+ ylim(0,3)
-e <- ggplot(var_miss_05, aes(fmiss)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light()  + xlim(0,0.8) #+ ylim(0,60)
-f <- ggplot(ind_miss_05, aes(fmiss)) + geom_histogram(fill = "red",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,1) #+ ylim(0,3)
+a <- ggplot(var_qual_05, aes(qual)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)
+b <- ggplot(var_freq_05, aes(maf)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light()
+c <- ggplot(var_depth_05, aes(mean_depth)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light()
+d <- ggplot(ind_depth_05, aes(depth)) + geom_histogram(fill = "red", colour = "black", alpha = 0.3) + theme_light() + xlim(0,200)
+e <- ggplot(var_miss_05, aes(fmiss)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8)
+f <- ggplot(ind_miss_05, aes(fmiss)) + geom_histogram(fill = "red", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1)
 
 stats5 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, 
                   labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 
@@ -593,14 +598,14 @@ ind_depth_07 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/v
 var_miss_07 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/07_samples.vcf.gz.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
 ind_miss_07 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/07_samples.vcf.gz.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
 
-a <- ggplot(var_qual_07, aes(qual)) +        geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)#+ ylim(0,0.025)
-b <- ggplot(var_freq_07, aes(maf)) +         geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light()#+ ylim(0,50)
+a <- ggplot(var_qual_07, aes(qual)) +        geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)
+b <- ggplot(var_freq_07, aes(maf)) +         geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light()
 
-c <- ggplot(var_depth_07, aes(mean_depth)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() #+ ylim(0,0.025)
-d <- ggplot(ind_depth_07, aes(depth)) +      geom_histogram(fill = "green",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200) #+ ylim(0,3)
+c <- ggplot(var_depth_07, aes(mean_depth)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() 
+d <- ggplot(ind_depth_07, aes(depth)) +      geom_histogram(fill = "green",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200)
 
 e <- ggplot(var_miss_07, aes(fmiss)) +       geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8) #+ ylim(0,60)
-f <- ggplot(ind_miss_07, aes(fmiss)) + geom_histogram(fill = "green",      colour = "black", alpha = 0.3) + theme_light()+ xlim(0,1) #+ ylim(0,3)
+f <- ggplot(ind_miss_07, aes(fmiss)) + geom_histogram(fill = "green",      colour = "black", alpha = 0.3) + theme_light()+ xlim(0,1)
 
 stats7 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, 
                   labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 
@@ -623,12 +628,12 @@ ind_depth_18 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/v
 var_miss_18 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/18_samples.vcf.gz.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
 ind_miss_18 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/18_samples.vcf.gz.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
 
-a <- ggplot(var_qual_18, aes(qual)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000) #+ ylim(0,0.025)
+a <- ggplot(var_qual_18, aes(qual)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)
 b <- ggplot(var_freq_18, aes(maf)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light()+ ylim(0,50)
-c <- ggplot(var_depth_18, aes(mean_depth)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light()# + ylim(0,0.025)
-d <- ggplot(ind_depth_18, aes(depth)) + geom_histogram(fill = "blue",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200) #+ ylim(0,3)
-e <- ggplot(var_miss_18, aes(fmiss)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8) #+ ylim(0,60)
-f <- ggplot(ind_miss_18, aes(fmiss)) + geom_histogram(fill = "blue",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,1) #+ ylim(0,3)
+c <- ggplot(var_depth_18, aes(mean_depth)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light()
+d <- ggplot(ind_depth_18, aes(depth)) + geom_histogram(fill = "blue",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200)
+e <- ggplot(var_miss_18, aes(fmiss)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8)
+f <- ggplot(ind_miss_18, aes(fmiss)) + geom_histogram(fill = "blue",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,1)
 
 stats18 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, 
                   labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 
@@ -636,6 +641,33 @@ stats18 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3,
                   font.label = c(size = 10))
 
 annotate_figure(stats18, top = text_grob("C.tyz + C.par (n = 18)", color = "black", face = "bold", size = 14))
+
+# load quality data
+var_qual_38 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/38_samples.lqual", col.names = c("chr", "pos", "qual"), skip = 1)
+# load maf data
+var_freq_38 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/38_samples.frq", col_names = c("chr", "pos", "nalleles", "nchr", "a1", "a2"), skip = 1)
+var_freq_38$a2 <- as.numeric(var_freq_38$a2)
+var_freq_38$maf <- var_freq_38 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
+# load depth data
+var_depth_38 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/38_samples.ldepth.mean", col.names = c("chr", "pos", "mean_depth", "var_depth"), skip = 1)
+ind_depth_38 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/38_samples.idepth", col_names = c("ind", "nsites", "depth"), skip = 1)
+# load missingness data
+var_miss_38 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/38_samples.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
+ind_miss_38 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/products/vcftools/38_samples.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
+
+a <- ggplot(var_qual_38, aes(qual)) + geom_density(fill = "purple", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000) 
+b <- ggplot(var_freq_38, aes(maf)) + geom_density(fill = "purple", colour = "black", alpha = 0.3) + theme_light()+ ylim(0,50)
+c <- ggplot(var_depth_38, aes(mean_depth)) + geom_density(fill = "purple", colour = "black", alpha = 0.3) + theme_light()# + ylim(0,0.025)
+d <- ggplot(ind_depth_38, aes(depth)) + geom_histogram(fill = "purple",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,200)
+e <- ggplot(var_miss_38, aes(fmiss)) + geom_density(fill = "purple", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8) #+ ylim(0,60)
+f <- ggplot(ind_miss_38, aes(fmiss)) + geom_histogram(fill = "purple",      colour = "black", alpha = 0.3) + theme_light() + xlim(0,1)
+
+stats38 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, 
+                  labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 
+                             'Mean Depth per individual', 'Variant Missingness', 'Missing data per individual'), 
+                  font.label = c(size = 10))
+
+annotate_figure(stats38, top = text_grob("C.tyz + C.par + C.hom (n = 38)", color = "black", face = "bold", size = 14))
 ```
 
 
@@ -691,26 +723,21 @@ Now we have an idea of how to set out thresholds, we will do just that and filte
 
 ``` {r, ALL-STATS-SUMMARY-FILTERS, echo = F, warning = F, message = F}
 # 05_samples
-a <- ggplot(var_qual_05, aes(qual)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,1000) +#+ ylim(0,0.025) + 
-geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
+a <- ggplot(var_qual_05, aes(qual)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000) + 
+  geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
 b <- ggplot(var_freq_05, aes(maf)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + 
-  theme_light() #+ ylim(0,50)
+  theme_light() 
 
-c <- ggplot(var_depth_05, aes(mean_depth)) + geom_density(fill = "red", colour = "black", alpha = 0.3) +
-  theme_light()+ #+ ylim(0,0.025) + 
+c <- ggplot(var_depth_05, aes(mean_depth)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light() + 
   geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none") +
   geom_vline(aes(xintercept = 2*42.82), color = "green", size = 1.2) + theme(legend.position = "none")
 
-d <- ggplot(ind_depth_05, aes(depth)) + geom_histogram(fill = "red", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,200) #+ ylim(0,3)
+d <- ggplot(ind_depth_05, aes(depth)) + geom_histogram(fill = "red", colour = "black", alpha = 0.3) + theme_light() + xlim(0,200)
 
-e <- ggplot(var_miss_05, aes(fmiss)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,0.8)+ #+ ylim(0,60)+
+e <- ggplot(var_miss_05, aes(fmiss)) + geom_density(fill = "red", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8)+ 
   geom_vline(aes(xintercept = 0.15), color = "green", size = 1.2) + theme(legend.position = "none")
 
-f <- ggplot(ind_miss_05, aes(fmiss)) + geom_histogram(fill = "red", colour = "black", alpha = 0.3) +
-  theme_light() + xlim(0,1) #+ ylim(0,3)
+f <- ggplot(ind_miss_05, aes(fmiss)) + geom_histogram(fill = "red", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1)
 
 stats5 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 'Mean Depth per individual', 'Variant Missingness', 'Missing data per individual'),font.label = c(size = 10))
 
@@ -719,27 +746,21 @@ annotate_figure(stats5, top = text_grob("C.tyz (n = 5) filters set", color = "bl
 ################################################################################
 
 # 07_samples
-a <- ggplot(var_qual_07, aes(qual)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,1000)+# ylim(0,0.025) + 
+a <- ggplot(var_qual_07, aes(qual)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)+
 geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
 
-b <- ggplot(var_freq_07, aes(maf)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + 
-  theme_light() #+ ylim(0,50)
+b <- ggplot(var_freq_07, aes(maf)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() 
 
-c <- ggplot(var_depth_07, aes(mean_depth)) + geom_density(fill = "green", colour = "black", alpha = 0.3) +
-  theme_light() + #+ ylim(0,0.025) + 
+c <- ggplot(var_depth_07, aes(mean_depth)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() +
   geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none") +
   geom_vline(aes(xintercept = 2*67.5032), color = "green", size = 1.2) + theme(legend.position = "none")
 
-d <- ggplot(ind_depth_07, aes(depth)) + geom_histogram(fill = "green", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,200) #+ ylim(0,3)
+d <- ggplot(ind_depth_07, aes(depth)) + geom_histogram(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,200)
 
-e <- ggplot(var_miss_07, aes(fmiss)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,0.8)+ #+ ylim(0,60)+
+e <- ggplot(var_miss_07, aes(fmiss)) + geom_density(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8) +
   geom_vline(aes(xintercept = 0.1), color = "green", size = 1.2) + theme(legend.position = "none")
 
-f <- ggplot(ind_miss_07, aes(fmiss)) + geom_histogram(fill = "green", colour = "black", alpha = 0.3) +
-  theme_light() + xlim(0,1) #+ ylim(0,3)
+f <- ggplot(ind_miss_07, aes(fmiss)) + geom_histogram(fill = "green", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1)
 
 stats7 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 'Mean Depth per individual', 'Variant Missingness', 'Missing data per individual'),font.label = c(size = 10))
 
@@ -748,32 +769,51 @@ annotate_figure(stats7, top = text_grob("C.tyz + C.par + C.hom (n = 7)", color =
 ################################################################################
 
 # 18_samples
-a <- ggplot(var_qual_18, aes(qual)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,1000)+# ylim(0,0.025) + 
+a <- ggplot(var_qual_18, aes(qual)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)+
   geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
 
-b <- ggplot(var_freq_18, aes(maf)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + 
-  theme_light() #+ ylim(0,50)
+b <- ggplot(var_freq_18, aes(maf)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() 
 
-c <- ggplot(var_depth_18, aes(mean_depth)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) +
-  theme_light() +#+ ylim(0,0.025) + 
+c <- ggplot(var_depth_18, aes(mean_depth)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() +
   geom_vline(aes(xintercept = 10), color = "green", size = 1.2) +
   geom_vline(aes(xintercept = 2*80.51647), color = "green", size = 1.2) + 
   theme(legend.position = "none")
 
-d <- ggplot(ind_depth_18, aes(depth)) + geom_histogram(fill = "blue", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,200) #+ ylim(0,3)
+d <- ggplot(ind_depth_18, aes(depth)) + geom_histogram(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,200)
 
-e <- ggplot(var_miss_18, aes(fmiss)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + 
-  theme_light() + xlim(0,0.8)+ #+ ylim(0,60)+
+e <- ggplot(var_miss_18, aes(fmiss)) + geom_density(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,0.8)+ 
   geom_vline(aes(xintercept = 0.1), color = "green", size = 1.2) + theme(legend.position = "none")
 
-f <- ggplot(ind_miss_18, aes(fmiss)) + geom_histogram(fill = "blue", colour = "black", alpha = 0.3) +
-  theme_light() + xlim(0,1) #+ ylim(0,3)
+f <- ggplot(ind_miss_18, aes(fmiss)) + geom_histogram(fill = "blue", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1)
 
 stats18 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 'Mean Depth per individual', 'Variant Missingness', 'Missing data per individual'),font.label = c(size = 10))
 
 annotate_figure(stats18, top = text_grob("C.tyz + C.par (n = 18)", color = "black", face = "bold", size = 14))
+
+################################################################################
+
+# 38_samples
+a <- ggplot(var_qual_38, aes(qual)) + geom_density(fill = "purple", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1000)+ 
+  geom_vline(aes(xintercept = 10), color = "green", size = 1.2) + theme(legend.position = "none")
+
+b <- ggplot(var_freq_38, aes(maf)) + geom_density(fill = "purple", colour = "black", alpha = 0.3) + theme_light()
+
+c <- ggplot(var_depth_38, aes(mean_depth)) + geom_density(fill = "purple", colour = "black", alpha = 0.3) +
+  geom_vline(aes(xintercept = 10), color = "green", size = 1.2) +
+  geom_vline(aes(xintercept = 2*97.91384), color = "green", size = 1.2) + 
+  theme(legend.position = "none") + theme_light()
+
+d <- ggplot(ind_depth_38, aes(depth)) + geom_histogram(fill = "purple", colour = "black", alpha = 0.3) + theme_light() + xlim(0,200)
+
+e <- ggplot(var_miss_38, aes(fmiss)) + geom_density(fill = "purple", colour = "black", alpha = 0.3) + 
+  theme_light() + xlim(0,0.8) +
+  geom_vline(aes(xintercept = 0.1), color = "green", size = 1.2) + theme(legend.position = "none")
+
+f <- ggplot(ind_miss_38, aes(fmiss)) + geom_histogram(fill = "purple", colour = "black", alpha = 0.3) + theme_light() + xlim(0,1)
+
+stats38 <- ggarrange(a,b,c,d,e,f, ncol = 2, nrow = 3, labels = c('Variant Quality', 'Minor Allele Frequency', 'Variant Mean Depth', 'Mean Depth per individual', 'Variant Missingness', 'Missing data per individual'),font.label = c(size = 10))
+
+annotate_figure(stats38, top = text_grob("C.tyz + C.par + C.hom (n = 38)", color = "black", face = "bold", size = 14))
 
 ```
 
@@ -1197,6 +1237,284 @@ h
 
 #plot2 <- ggarrange(g,h, ncol = 2, nrow = 1, labels = c('Variance explained [%]', 'PCA'), font.label = c(size = 10))
 #annotate_figure(plot2, top = text_grob("PCA C.tyzzeri vs. C.parvum (n = 18)", color = "black", face = "bold", size = 14))
+```
+
+
+#### TYZZERI VS. PARVUM  (n = 18)
+
+set filters:
+
+- QUAL  =   30
+- MAF   =   0.1
+- MISS  =   0.9
+- MIN_DEPTH = 10
+- MAX_DEPTH = 2*80.51647
+
+``` {r 38_samples-stats, echo = F, warning = F, message = F}
+# STATS PCA ###################################################################
+pca <- read_table("~/Documents/Github/Crypto/Genome_Analysis/products/pcaFiltered/38_samples_filtered_stats2.eigenvec", col_names = F)
+eigenval <- scan("~/Documents/Github/Crypto/Genome_Analysis/products/pcaFiltered/38_samples_filtered_stats2.eigenval")
+
+pca <- pca[,-1]
+names(pca)[1] <- "ind"
+names(pca)[2:ncol(pca)] <- paste0("PC", 1:(ncol(pca)-1))
+sample <- rep(NA, length(pca$ind))
+sample[grep("EUR_T_866", pca$ind)] <- "EUR_T_866"
+sample[grep("EUR_T_942", pca$ind)] <- "EUR_T_942"
+sample[grep("EUR_T_900", pca$ind)] <- "EUR_T_900"
+sample[grep("CHN_T_GU",  pca$ind)] <- "CHN_T_GU"
+sample[grep("USA_T_GA",  pca$ind)] <- "USA_T_GA"
+sample[grep("EUR_P_CZ1", pca$ind)] <- "EUR_P_CZ1"
+sample[grep("EUR_P_CZ2", pca$ind)] <- "EUR_P_CZ2"
+sample[grep("USA_P_OR",  pca$ind)] <- "USA_P_OR"
+sample[grep("USA_P_AL1", pca$ind)] <- "USA_P_AL1"
+sample[grep("USA_P_AL2", pca$ind)] <- "USA_P_AL2"
+sample[grep("CHN_P_GU1", pca$ind)] <- "CHN_P_GU1"
+sample[grep("CHN_P_GU2", pca$ind)] <- "CHN_P_GU2"
+sample[grep("CHN_P_GU3", pca$ind)] <- "CHN_P_GU3"
+sample[grep("CHN_P_SH1", pca$ind)] <- "CHN_P_SH1"
+sample[grep("CHN_P_SH2", pca$ind)] <- "CHN_P_SH2"
+sample[grep("USA_P_WI",  pca$ind)] <- "USA_P_WI"
+sample[grep("USA_P_WA1", pca$ind)] <- "USA_P_WA1"
+sample[grep("USA_P_WA2", pca$ind)] <- "USA_P_WA2"
+sample[grep("COL_H_MD",  pca$ind)] <- "COL_H_MD"
+sample[grep("USA_H_MO",  pca$ind)] <- "USA_H_MO"
+sample[grep("USA_H_ID",  pca$ind)] <- "USA_H_ID"
+sample[grep("UGA_H_KA1", pca$ind)] <- "UGA_H_KA1"
+sample[grep("UGA_H_KA2", pca$ind)] <- "UGA_H_KA2"
+sample[grep("EUR_H_WL1", pca$ind)] <- "EUR_H_WL1"
+sample[grep("EUR_H_WL2", pca$ind)] <- "EUR_H_WL2"
+sample[grep("EUR_H_WL3", pca$ind)] <- "EUR_H_WL3"
+sample[grep("EUR_H_WL4", pca$ind)] <- "EUR_H_WL4"
+sample[grep("EUR_H_WL5", pca$ind)] <- "EUR_H_WL5"
+sample[grep("AFR_H_GH1", pca$ind)] <- "AFR_H_GH1"
+sample[grep("AFR_H_GH2", pca$ind)] <- "AFR_H_GH2"
+sample[grep("AFR_H_GH3", pca$ind)] <- "AFR_H_GH3"
+sample[grep("AFR_H_TZ1", pca$ind)] <- "AFR_H_TZ1"
+sample[grep("AFR_H_TZ2", pca$ind)] <- "AFR_H_TZ2"
+sample[grep("AFR_H_TZ3", pca$ind)] <- "AFR_H_TZ3"
+sample[grep("AFR_H_TZ4", pca$ind)] <- "AFR_H_TZ4"
+sample[grep("MDG_H_1",   pca$ind)] <- "MDG_H_1"
+sample[grep("MDG_H_2",   pca$ind)] <- "MDG_H_2"
+sample[grep("MDG_H_3",   pca$ind)] <- "MDG_H_3"
+
+loc <- rep(NA, length(pca$ind))
+loc[grep("EUR_T_866", pca$ind)] <- "GER"
+loc[grep("EUR_T_942", pca$ind)] <- "GER"
+loc[grep("EUR_T_900", pca$ind)] <- "GER"
+loc[grep("CHN_T_GU",  pca$ind)] <- "CHN"
+loc[grep("USA_T_GA",  pca$ind)] <- "USA"
+loc[grep("EUR_P_CZ1", pca$ind)] <- "CZE"
+loc[grep("EUR_P_CZ2", pca$ind)] <- "CZE"
+loc[grep("USA_P_OR",  pca$ind)] <- "USA"
+loc[grep("USA_P_AL1", pca$ind)] <- "USA"
+loc[grep("USA_P_AL2", pca$ind)] <- "USA"
+loc[grep("CHN_P_GU1", pca$ind)] <- "CHN"
+loc[grep("CHN_P_GU2", pca$ind)] <- "CHN"
+loc[grep("CHN_P_GU3", pca$ind)] <- "CHN"
+loc[grep("CHN_P_SH1", pca$ind)] <- "CHN"
+loc[grep("CHN_P_SH2", pca$ind)] <- "CHN"
+loc[grep("USA_P_WI",  pca$ind)] <- "USA"
+loc[grep("USA_P_WA1", pca$ind)] <- "USA"
+loc[grep("USA_P_WA2", pca$ind)] <- "USA"
+loc[grep("COL_H_MD",  pca$ind)] <- "COL"
+loc[grep("USA_H_MO",  pca$ind)] <- "USA"
+loc[grep("USA_H_ID",  pca$ind)] <- "USA"
+loc[grep("UGA_H_KA1", pca$ind)] <- "UGA"
+loc[grep("UGA_H_KA2", pca$ind)] <- "UGA"
+loc[grep("EUR_H_WL1", pca$ind)] <- "WAL"
+loc[grep("EUR_H_WL2", pca$ind)] <- "WAL"
+loc[grep("EUR_H_WL3", pca$ind)] <- "WAL"
+loc[grep("EUR_H_WL4", pca$ind)] <- "WAL"
+loc[grep("EUR_H_WL5", pca$ind)] <- "WAL"
+loc[grep("AFR_H_GH1", pca$ind)] <- "GHA"
+loc[grep("AFR_H_GH2", pca$ind)] <- "GHA"
+loc[grep("AFR_H_GH3", pca$ind)] <- "GHA"
+loc[grep("AFR_H_TZ1", pca$ind)] <- "TZN"
+loc[grep("AFR_H_TZ2", pca$ind)] <- "TZN"
+loc[grep("AFR_H_TZ3", pca$ind)] <- "TZN"
+loc[grep("AFR_H_TZ4", pca$ind)] <- "TZN"
+loc[grep("MDG_H_1",   pca$ind)] <- "MDG"
+loc[grep("MDG_H_2",   pca$ind)] <- "MDG"
+loc[grep("MDG_H_3",   pca$ind)] <- "MDG"
+
+reg <- rep(NA, length(pca$ind))
+reg[grep("EUR_T_866", pca$ind)] <- "EUR"
+reg[grep("EUR_T_942", pca$ind)] <- "EUR"
+reg[grep("EUR_T_900", pca$ind)] <- "EUR"
+reg[grep("CHN_T_GU",  pca$ind)] <- "CHN"
+reg[grep("USA_T_GA",  pca$ind)] <- "USA"
+reg[grep("EUR_P_CZ1", pca$ind)] <- "EUR"
+reg[grep("EUR_P_CZ2", pca$ind)] <- "EUR"
+reg[grep("USA_P_OR",  pca$ind)] <- "NAM"
+reg[grep("USA_P_AL1", pca$ind)] <- "NAM"
+reg[grep("USA_P_AL2", pca$ind)] <- "NAM"
+reg[grep("CHN_P_GU1", pca$ind)] <- "CHN"
+reg[grep("CHN_P_GU2", pca$ind)] <- "CHN"
+reg[grep("CHN_P_GU3", pca$ind)] <- "CHN"
+reg[grep("CHN_P_SH1", pca$ind)] <- "CHN"
+reg[grep("CHN_P_SH2", pca$ind)] <- "CHN"
+reg[grep("USA_P_WI",  pca$ind)] <- "NAM"
+reg[grep("USA_P_WA1", pca$ind)] <- "NAM"
+reg[grep("USA_P_WA2", pca$ind)] <- "NAM"
+reg[grep("COL_H_MD",  pca$ind)] <- "SAM"
+reg[grep("USA_H_MO",  pca$ind)] <- "NAM"
+reg[grep("USA_H_ID",  pca$ind)] <- "NAM"
+reg[grep("UGA_H_KA1", pca$ind)] <- "AFR"
+reg[grep("UGA_H_KA2", pca$ind)] <- "AFR"
+reg[grep("EUR_H_WL1", pca$ind)] <- "EUR"
+reg[grep("EUR_H_WL2", pca$ind)] <- "EUR"
+reg[grep("EUR_H_WL3", pca$ind)] <- "EUR"
+reg[grep("EUR_H_WL4", pca$ind)] <- "EUR"
+reg[grep("EUR_H_WL5", pca$ind)] <- "EUR"
+reg[grep("AFR_H_GH1", pca$ind)] <- "AFR"
+reg[grep("AFR_H_GH2", pca$ind)] <- "AFR"
+reg[grep("AFR_H_GH3", pca$ind)] <- "AFR"
+reg[grep("AFR_H_TZ1", pca$ind)] <- "AFR"
+reg[grep("AFR_H_TZ2", pca$ind)] <- "AFR"
+reg[grep("AFR_H_TZ3", pca$ind)] <- "AFR"
+reg[grep("AFR_H_TZ4", pca$ind)] <- "AFR"
+reg[grep("MDG_H_1",   pca$ind)] <- "AFR"
+reg[grep("MDG_H_2",   pca$ind)] <- "AFR"
+reg[grep("MDG_H_3",   pca$ind)] <- "AFR"
+
+host <- rep(NA, length(pca$ind))
+host[grep("EUR_T_866", pca$ind)] <- "Mmd"
+host[grep("EUR_T_942", pca$ind)] <- "Mmd"
+host[grep("EUR_T_900", pca$ind)] <- "Mmm"
+host[grep("CHN_T_GU", pca$ind)] <- "Mmm"
+host[grep("USA_T_GA", pca$ind)] <- "Mmd"
+host[grep("EUR_P_CZ2", pca$ind)] <- "Human"
+host[grep("USA_P_OR", pca$ind)] <- "Human"
+host[grep("USA_P_AL1", pca$ind)] <- "Human"
+host[grep("USA_P_AL2", pca$ind)] <- "Human"
+host[grep("EUR_P_CZ1", pca$ind)] <- "Cattle"
+host[grep("CHN_P_GU1", pca$ind)] <- "Cattle"
+host[grep("CHN_P_GU2", pca$ind)] <- "Cattle"
+host[grep("CHN_P_GU3", pca$ind)] <- "Cattle"
+host[grep("CHN_P_SH1", pca$ind)] <- "Cattle"
+host[grep("CHN_P_SH2", pca$ind)] <- "Cattle"
+host[grep("USA_P_WI", pca$ind)] <- "Cattle"
+host[grep("USA_P_WA1", pca$ind)] <- "Cattle"
+host[grep("USA_P_WA2", pca$ind)] <- "Cattle"
+host[grep("COL_H_MD",  pca$ind)] <- "Human"
+host[grep("USA_H_MO",  pca$ind)] <- "Human"
+host[grep("USA_H_ID",  pca$ind)] <- "Human"
+host[grep("UGA_H_KA1", pca$ind)] <- "Human"
+host[grep("UGA_H_KA2", pca$ind)] <- "Human"
+host[grep("EUR_H_WL1", pca$ind)] <- "Human"
+host[grep("EUR_H_WL2", pca$ind)] <- "Human"
+host[grep("EUR_H_WL3", pca$ind)] <- "Human"
+host[grep("EUR_H_WL4", pca$ind)] <- "Human"
+host[grep("EUR_H_WL5", pca$ind)] <- "Human"
+host[grep("AFR_H_GH1", pca$ind)] <- "Human"
+host[grep("AFR_H_GH2", pca$ind)] <- "Human"
+host[grep("AFR_H_GH3", pca$ind)] <- "Human"
+host[grep("AFR_H_TZ1", pca$ind)] <- "Human"
+host[grep("AFR_H_TZ2", pca$ind)] <- "Human"
+host[grep("AFR_H_TZ3", pca$ind)] <- "Human"
+host[grep("AFR_H_TZ4", pca$ind)] <- "Human"
+host[grep("MDG_H_1",   pca$ind)] <- "Human"
+host[grep("MDG_H_2",   pca$ind)] <- "Human"
+host[grep("MDG_H_3",   pca$ind)] <- "Human"
+
+spp <- rep(NA, length(pca$ind))
+spp[grep("EUR_T_866",   pca$ind)] <- "C.tyzzeri"
+spp[grep("EUR_T_942",   pca$ind)] <- "C.tyzzeri"
+spp[grep("EUR_T_900",   pca$ind)] <- "C.tyzzeri"
+spp[grep("CHN_T_GU", pca$ind)] <- "C.tyzzeri"
+spp[grep("USA_T_GA", pca$ind)] <- "C.tyzzeri"
+spp[grep("EUR_P_CZ2", pca$ind)] <- "C.parvum"
+spp[grep("USA_P_OR", pca$ind)] <- "C.parvum"
+spp[grep("USA_P_AL1", pca$ind)] <- "C.parvum"
+spp[grep("USA_P_AL2", pca$ind)] <- "C.parvum"
+spp[grep("EUR_P_CZ1", pca$ind)] <- "C.parvum"
+spp[grep("CHN_P_GU1", pca$ind)] <- "C.parvum"
+spp[grep("CHN_P_GU2", pca$ind)] <- "C.parvum"
+spp[grep("CHN_P_GU3", pca$ind)] <- "C.parvum"
+spp[grep("CHN_P_SH1", pca$ind)] <- "C.parvum"
+spp[grep("CHN_P_SH2", pca$ind)] <- "C.parvum"
+spp[grep("USA_P_WI",  pca$ind)] <- "C.parvum"
+spp[grep("USA_P_WA1", pca$ind)] <- "C.parvum"
+spp[grep("USA_P_WA2", pca$ind)] <- "C.parvum"
+spp[grep("COL_H_MD",  pca$ind)] <- "C.hominis"
+spp[grep("USA_H_MO",  pca$ind)] <- "C.hominis"
+spp[grep("USA_H_ID",  pca$ind)] <- "C.hominis"
+spp[grep("UGA_H_KA1", pca$ind)] <- "C.hominis"
+spp[grep("UGA_H_KA2", pca$ind)] <- "C.hominis"
+spp[grep("EUR_H_WL1", pca$ind)] <- "C.hominis"
+spp[grep("EUR_H_WL2", pca$ind)] <- "C.hominis"
+spp[grep("EUR_H_WL3", pca$ind)] <- "C.hominis"
+spp[grep("EUR_H_WL4", pca$ind)] <- "C.hominis"
+spp[grep("EUR_H_WL5", pca$ind)] <- "C.hominis"
+spp[grep("AFR_H_GH1", pca$ind)] <- "C.hominis"
+spp[grep("AFR_H_GH2", pca$ind)] <- "C.hominis"
+spp[grep("AFR_H_GH3", pca$ind)] <- "C.hominis"
+spp[grep("AFR_H_TZ1", pca$ind)] <- "C.hominis"
+spp[grep("AFR_H_TZ2", pca$ind)] <- "C.hominis"
+spp[grep("AFR_H_TZ3", pca$ind)] <- "C.hominis"
+spp[grep("AFR_H_TZ4", pca$ind)] <- "C.hominis"
+spp[grep("MDG_H_1",   pca$ind)] <- "C.hominis"
+spp[grep("MDG_H_2",   pca$ind)] <- "C.hominis"
+spp[grep("MDG_H_3",   pca$ind)] <- "C.hominis"
+
+
+ssp <- rep(NA, length(pca$ind))
+ssp[grep("EUR_T_866",   pca$ind)] <- "IXb"
+ssp[grep("EUR_T_942",   pca$ind)] <- "IXb"
+ssp[grep("EUR_T_900",   pca$ind)] <- "IXb"
+ssp[grep("CHN_T_GU", pca$ind)] <- "IXa"
+ssp[grep("USA_T_GA", pca$ind)] <- "IXb"
+ssp[grep("EUR_P_CZ", pca$ind)] <- "IIa"
+ssp[grep("USA_P_OR", pca$ind)] <- "IIc"
+ssp[grep("USA_P_AL1", pca$ind)] <- "IIc"
+ssp[grep("USA_P_AL2", pca$ind)] <- "IId"
+ssp[grep("EUR_P_CZ", pca$ind)] <- "IIa"
+ssp[grep("CHN_P_GU1", pca$ind)] <- "IId"
+ssp[grep("CHN_P_GU2", pca$ind)] <- "IId"
+ssp[grep("CHN_P_GU3", pca$ind)] <- "IId"
+ssp[grep("CHN_P_SH1", pca$ind)] <- "IId"
+ssp[grep("CHN_P_SH2", pca$ind)] <- "IId"
+ssp[grep("USA_P_WI", pca$ind)] <- "IIa"
+ssp[grep("USA_P_WA1", pca$ind)] <- "IIa"
+ssp[grep("USA_P_WA2", pca$ind)] <- "IIa"
+ssp[grep("COL_H_MD",  pca$ind)] <- "Ie"
+ssp[grep("USA_H_MO",  pca$ind)] <- "Ia"
+ssp[grep("USA_H_ID",  pca$ind)] <- "Ib"
+ssp[grep("UGA_H_KA1", pca$ind)] <- "Ib"
+ssp[grep("UGA_H_KA2", pca$ind)] <- "Ib"
+ssp[grep("EUR_H_WL1", pca$ind)] <- "Ib"
+ssp[grep("EUR_H_WL2", pca$ind)] <- "Ib"
+ssp[grep("EUR_H_WL3", pca$ind)] <- "Ib"
+ssp[grep("EUR_H_WL4", pca$ind)] <- "Ib"
+ssp[grep("EUR_H_WL5", pca$ind)] <- "Ib"
+ssp[grep("AFR_H_GH1", pca$ind)] <- "Id"
+ssp[grep("AFR_H_GH2", pca$ind)] <- "Ie"
+ssp[grep("AFR_H_GH3", pca$ind)] <- "Ie"
+ssp[grep("AFR_H_TZ1", pca$ind)] <- "Ia"
+ssp[grep("AFR_H_TZ2", pca$ind)] <- "Ib"
+ssp[grep("AFR_H_TZ3", pca$ind)] <- "Id"
+ssp[grep("AFR_H_TZ4", pca$ind)] <- "Ie"
+ssp[grep("MDG_H_1",   pca$ind)] <- "Ia"
+ssp[grep("MDG_H_2",   pca$ind)] <- "Ia"
+ssp[grep("MDG_H_3",   pca$ind)] <- "Ib"
+
+
+pca <- as_tibble(data.frame(pca, sample, loc, reg, host, spp, ssp))
+pve <- data.frame(PC = 1:20, pve = eigenval/sum(eigenval)*100)
+pve
+cumsum(pve$pve)
+
+g <- pve %>% ggplot(aes(PC, pve)) + geom_bar(stat = "identity") + ylab("Percentage variance explained") + theme_light()
+g
+h <- pca %>% ggplot(aes(signif(pve$pve[1], 3)*PC1, (signif(pve$pve[2], 3))*PC2, 
+  col = spp, shape = host, label = sample)) + geom_point(size = 3) + 
+  #geom_label(nudge_y = 0.05) +
+  ggtitle("PCA C.tyz vs. C.par vs. C.hom (n = 38)") +
+  scale_color_manual(values = c("blue", "red", "green", "purple", "yellow", "lightgreen", "darkgreen", "grey", "lightblue", "pink")) + 
+  coord_equal() + theme_light() + 
+  xlab(paste0("PC1 (", signif(pve$pve[1], 3), "%)")) + ylab(paste0("PC2 (", signif(pve$pve[2], 3), "%)")) + theme(legend.position = "right")
+h
 ```
 
 ## Looking at PC2 and PC3 in multi-species PCAs (n = 7) and (n = 18)

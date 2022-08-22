@@ -28,9 +28,11 @@ library(fishualize)
 #CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/07_samples_filtered_stats2_annotated.vcf")
 #CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/07_samples_filtered_annotated.vcf")
 #CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/18_samples_filtered_stats2_annotated.vcf")
+#CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/38_samples_filtered_stats2_annotated.vcf")
+
 #CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/05_samples_unfiltered_annotated.vcf")
 #CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/07_samples_unfiltered_annotated.vcf")
-CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/18_samples_unfiltered_annotated.vcf")
+#CollapsedVCF <- readVcf("~/Documents/Github/Crypto/Genome_Analysis/products/vcfAnnotated/18_samples_unfiltered_annotated.vcf")
 
 
 
@@ -75,11 +77,10 @@ colnames(CollapsedVCF)[colnames(CollapsedVCF) %in% 'CollapsedVCF@fixed@listData[
 #write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples_stats2.csv")
 #write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples.csv")
 #write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/18_samples_stats2.csv")
+#write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/38_samples_stats2.csv")
 #write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/05_samples_unfiltered.csv")
 #write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples_unfiltered.csv")
-write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/18_samples_unfiltered.csv")
-
-
+#write.csv(CollapsedVCF, "~/Documents/Github/Crypto/Genome_Analysis/products/csv/18_samples_unfiltered.csv")
 ```
 
 ################################################################################
@@ -91,6 +92,69 @@ samples05  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/0
 samples07  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples_stats2.csv")
 samples07b <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples.csv")
 samples18  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/18_samples_stats2.csv")
+samples38  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/38_samples_stats2.csv")
+
+# Which genes/SNPs cause high diversity in the sets?
+
+samples05 <- samples05 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, Product) %>% distinct()
+samples07 <- samples07 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, Product) %>% distinct()
+samples18 <- samples18 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, Product) %>% distinct()
+samples38 <- samples38 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, Product) %>% distinct()
+
+samples <- full_join(samples05, samples07)
+samples <- full_join(samples, samples18)
+samples <- full_join(samples, samples38)
+
+
+TYZ <- unique(samples05$GeneID)
+TP  <- unique(samples18$GeneID)
+TPH <- unique(samples07$GeneID)
+TPH2 <- unique(samples38$GeneID)
+
+df1 <- data.frame(col = TYZ, TYZ)
+df2 <- data.frame(col = TP, TP)
+df3 <- data.frame(col = TPH, TPH)
+df4 <- data.frame(col = TPH2, TPH2)
+
+unique <- base::Reduce(function(x,y) merge(x,y, all=T), list(df1,df2,df3,df4)) [,-1]
+
+ggVennDiagram(unique, label_alpha = 0.7, show_intersect = T, edge_size = 0, label = "count")# + scale_fill_fish(option = "Cirrhilabrus_solorensis") + theme(legend.position = "none")
+
+unique <- unique %>%
+  mutate(incl_in = case_when(!is.na(TYZ) & !is.na(TP) & !is.na(TPH) & !is.na(TPH2) ~ 4,
+                             
+                             is.na(TYZ) & !is.na(TP) & !is.na(TPH) & !is.na(TPH2) ~ 3,
+                             !is.na(TYZ) & is.na(TP) & !is.na(TPH) & !is.na(TPH2) ~ 3,
+                             !is.na(TYZ) & !is.na(TP) & is.na(TPH) & !is.na(TPH2) ~ 3,
+                             !is.na(TYZ) & !is.na(TP) & !is.na(TPH) & is.na(TPH2) ~ 3,
+                             
+                             is.na(TYZ) & is.na(TP) & !is.na(TPH) & !is.na(TPH2) ~ 2,
+                             is.na(TYZ) & !is.na(TP) & is.na(TPH) & !is.na(TPH2) ~ 2,
+                             is.na(TYZ) & !is.na(TP) & !is.na(TPH) & is.na(TPH2) ~ 2,
+                             !is.na(TYZ) & is.na(TP) & is.na(TPH) & !is.na(TPH2) ~ 2,
+                             !is.na(TYZ) & is.na(TP) & !is.na(TPH) & is.na(TPH2) ~ 2,
+                             !is.na(TYZ) & !is.na(TP) & is.na(TPH) & is.na(TPH2) ~ 2,
+
+                             !is.na(TYZ) & is.na(TP) & is.na(TPH) & is.na(TPH2) ~ 1,
+                             is.na(TYZ) & !is.na(TP) & is.na(TPH) & is.na(TPH2) ~ 1,
+                             is.na(TYZ) & is.na(TP) & !is.na(TPH) & is.na(TPH2) ~ 1,
+                             is.na(TYZ) & is.na(TP) & is.na(TPH) & !is.na(TPH2) ~ 1,
+                             
+                             is.na(TYZ) & is.na(TP) & is.na(TPH) & is.na(TPH2) ~ 0),
+         GeneID = case_when(!is.na(TYZ) ~ TYZ, !is.na(TP)  ~ TP, !is.na(TPH) ~ TPH, !is.na(TPH2) ~ TPH2),
+         TYZ = case_when(!is.na(TYZ) ~ T, is.na(TYZ) ~ F),
+         TP  = case_when(!is.na(TP)  ~ T, is.na(TP)  ~ F),
+         TPH = case_when(!is.na(TPH) ~ T, is.na(TPH) ~ F),
+         TPH2 = case_when(!is.na(TPH2) ~ T, is.na(TPH2) ~ F)) %>% 
+  dplyr::select(GeneID, TYZ, TP, TPH, TPH2, incl_in)
+
+common <- left_join(unique, samples)
+```
+
+``` {r, intersect-genes, echo = F, warning = F, message = F}
+samples05  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/05_samples_unfiltered.csv")
+samples07  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/07_samples_unfiltered.csv")
+samples18  <- read.csv("~/Documents/Github/Crypto/Genome_Analysis/products/csv/18_samples_unfiltered.csv")
 
 # Which genes/SNPs cause high diversity in the sets?
 
@@ -100,15 +164,17 @@ samples18 <- samples18 %>% filter(GeneID != '.') %>% dplyr::select(GeneID, Chr, 
 samples <- full_join(samples05, samples07)
 samples <- full_join(samples, samples18)
 
-TYZ         <- unique(samples05$GeneID)
-TYZ_PAR     <- unique(samples18$GeneID)
-TYZ_PAR_HOM <- unique(samples07$GeneID)
+TYZ <- unique(samples05$GeneID)
+TP  <- unique(samples18$GeneID)
+TPH <- unique(samples07$GeneID)
 
 df1 <- data.frame(col = TYZ, TYZ)
-df2 <- data.frame(col = TYZ_PAR, TYZ_PAR)
-df3 <- data.frame(col = TYZ_PAR_HOM, TYZ_PAR_HOM)
+df2 <- data.frame(col = TP, TP)
+df3 <- data.frame(col = TPH, TPH)
 
 unique <- base::Reduce(function(x,y) merge(x,y, all=T), list(df1,df2,df3)) [,-1]
+
+unique <- unique %>% 
 
 ggVennDiagram(unique, label_alpha = 0.7, show_intersect = F, edge_size = 0, label = "count") +
   scale_fill_fish(option = "Cirrhilabrus_solorensis") + theme(legend.position = "none")
@@ -127,5 +193,11 @@ unique <- unique %>%
          TPH = case_when(!is.na(TPH) ~ T, is.na(TPH) ~ F)) %>% 
   dplyr::select(GeneID, TYZ, TP, TPH, incl_in)
 
+gg2 <- unique %>% dplyr::select(TYZ, TP, TPH)
+
+ggVennDiagram(gg2, label_alpha = 0.7, show_intersect = F, edge_size = 0, label = "count") +
+  scale_fill_fish(option = "Cirrhilabrus_solorensis") + theme(legend.position = "none")
+
 common <- left_join(unique, samples) %>% filter(incl_in == 3)
+
 ```
