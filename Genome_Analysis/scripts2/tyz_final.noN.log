@@ -1,0 +1,50 @@
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--gzvcf tyz_final.noN.vcf.gz
+	--mac 1
+	--max-alleles 2
+	--out tyz_final.noN
+	--plink
+	--remove-indels
+
+Using zlib version: 1.2.11
+Warning: Expected at least 2 parts in FORMAT entry: ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+Warning: Expected at least 2 parts in FORMAT entry: ID=RGQ,Number=1,Type=Integer,Description="Unconditional reference genotype confidence, encoded as a phred quality -10*log10 p(genotype call is wrong)">
+Warning: Expected at least 2 parts in INFO entry: ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes, for each ALT allele, in the same order as listed">
+Warning: Expected at least 2 parts in INFO entry: ID=AC,Number=A,Type=Integer,Description="Allele count in genotypes, for each ALT allele, in the same order as listed">
+Warning: Expected at least 2 parts in INFO entry: ID=AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
+Warning: Expected at least 2 parts in INFO entry: ID=AF,Number=A,Type=Float,Description="Allele Frequency, for each ALT allele, in the same order as listed">
+Warning: Expected at least 2 parts in INFO entry: ID=MLEAC,Number=A,Type=Integer,Description="Maximum likelihood expectation (MLE) for the allele counts (not necessarily the same as the AC), for each ALT allele, in the same order as listed">
+Warning: Expected at least 2 parts in INFO entry: ID=MLEAC,Number=A,Type=Integer,Description="Maximum likelihood expectation (MLE) for the allele counts (not necessarily the same as the AC), for each ALT allele, in the same order as listed">
+Warning: Expected at least 2 parts in INFO entry: ID=MLEAF,Number=A,Type=Float,Description="Maximum likelihood expectation (MLE) for the allele frequency (not necessarily the same as the AF), for each ALT allele, in the same order as listed">
+Warning: Expected at least 2 parts in INFO entry: ID=MLEAF,Number=A,Type=Float,Description="Maximum likelihood expectation (MLE) for the allele frequency (not necessarily the same as the AF), for each ALT allele, in the same order as listed">
+After filtering, kept 5 out of 5 Individuals
+Writing PLINK PED and MAP files ... 
+
+Unrecognized values used for CHROM: Ctyz_1 - Replacing with 0.
+
+Unrecognized values used for CHROM: Ctyz_2 - Replacing with 0.
+
+Unrecognized values used for CHROM: Ctyz_3 - Replacing with 0.
+
+Unrecognized values used for CHROM: Ctyz_4 - Replacing with 0.
+
+Unrecognized values used for CHROM: Ctyz_5 - Replacing with 0.
+
+Unrecognized values used for CHROM: Ctyz_6 - Replacing with 0.
+
+Unrecognized values used for CHROM: Ctyz_7 - Replacing with 0.
+
+Unrecognized values used for CHROM: Ctyz_8 - Replacing with 0.
+
+Unrecognized values used for CHROM: Ctyz_00_1 - Replacing with 0.
+
+Unrecognized values used for CHROM: Ctyz_00_2 - Replacing with 0.
+
+Unrecognized values used for CHROM: Ctyz_00_3 - Replacing with 0.
+Done.
+After filtering, kept 6232 out of a possible 11811 Sites
+Run Time = 1.00 seconds

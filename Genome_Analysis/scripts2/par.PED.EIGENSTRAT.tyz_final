@@ -1,0 +1,8 @@
+genotypename:    tyz_final.ped
+snpname:         tyz_final.map
+indivname:       tyz_final.ped
+outputformat:    EIGENSTRAT
+genotypeoutname: tyz_final.eigenstratgeno
+snpoutname:      tyz_final.snp
+indivoutname:    tyz_final.ind
+familynames:     NO
