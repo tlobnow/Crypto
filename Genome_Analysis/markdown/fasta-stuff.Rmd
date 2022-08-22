@@ -1,0 +1,23 @@
+---
+title: "fasta-stuff"
+author: "Finn Lo"
+date: "2022-08-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libs, include = TRUE, echo = F, message=F, warning=F}
+library(tidyverse)
+```
+
+
+Extract sequences with names in file name.lst, one sequence name per line:
+
+    seqtk subseq in.fq name.lst > out.fq
+
+samtools bam to fasta
+
+    samtools bam2fq input.bam | seqtk seq -A - > output.fa
