@@ -1,0 +1,30 @@
+PLINK v1.90b4 64-bit (20 Mar 2017)
+Options in effect:
+  --allow-extra-chr
+  --const-fid 0
+  --make-bed
+  --out 38_samples_filtered_stats2
+  --vcf /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/products/vcfFiltered/38_samples_filtered_stats2.vcf
+
+Hostname: Finns-MacBook-Air.local
+Working directory: /Users/finnlo/Documents/Github/Crypto/Genome_Analysis/scripts
+Start time: Mon Aug  8 07:13:25 2022
+
+Random number seed: 1659935605
+4096 MB RAM detected; reserving 2048 MB for main workspace.
+--vcf: 38_samples_filtered_stats2-temporary.bed +
+38_samples_filtered_stats2-temporary.bim +
+38_samples_filtered_stats2-temporary.fam written.
+4345 variants loaded from .bim file.
+38 people (0 males, 0 females, 38 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to 38_samples_filtered_stats2.nosex .
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 38 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate is 0.926043.
+4345 variants and 38 people pass filters and QC.
+Note: No phenotypes present.
+--make-bed to 38_samples_filtered_stats2.bed + 38_samples_filtered_stats2.bim +
+38_samples_filtered_stats2.fam ... done.
+
+End time: Mon Aug  8 07:13:25 2022
