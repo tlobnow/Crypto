@@ -1,0 +1,10 @@
+
+VCFtools - 0.1.16
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--gzvcf /SAN/Ctyzzeri/opt/results/j_vcf/5T
+	--het
+	--out /SAN/Ctyzzeri/opt/results/vcftools/5T
+
+Error: Can't determine file type of /SAN/Ctyzzeri/opt/results/j_vcf/5T
