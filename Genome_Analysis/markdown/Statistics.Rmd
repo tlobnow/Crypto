@@ -1,0 +1,165 @@
+---
+title: "Statistics"
+author: "Finn Lobnow"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libs, include = TRUE, echo = F, message=F}
+library(tidyverse)
+library(knitr)
+library(ggpubr)
+library(readr)
+library(tibble)
+library(leaflet)
+library(htmltools)
+library(ggVennDiagram)
+library(fishualize)
+```
+
+``` {r, ALL-STATS-SUMMARY, echo = F, warning = F, message = F}
+################################################################################
+################################################################################
+# load quality data
+var_qual_866 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_866.vcf.lqual", col.names = c("chr", "pos", "qual"), skip = 1)
+# load maf data
+var_freq_866 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_866.vcf.frq", col_names = c("chr", "pos", "nalleles", "nchr", "a1", "a2"), skip = 1)
+var_freq_866$a2 <- as.numeric(var_freq_866$a2)
+var_freq_866$maf <- var_freq_866 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
+# load depth data
+var_depth_866 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_866.vcf.ldepth.mean", col.names = c("chr", "pos", "mean_depth", "var_depth"), skip = 1)
+ind_depth_866 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_866.vcf.idepth", col_names = c("ind", "nsites", "depth"), skip = 1)
+# load missingness data
+var_miss_866 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_866.vcf.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
+ind_miss_866 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_866.vcf.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
+
+################################################################################
+################################################################################
+# load quality data
+var_qual_900 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_900.vcf.lqual", col.names = c("chr", "pos", "qual"), skip = 1)
+# load maf data
+var_freq_900 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_900.vcf.frq", col_names = c("chr", "pos", "nalleles", "nchr", "a1", "a2"), skip = 1)
+var_freq_900$a2 <- as.numeric(var_freq_900$a2)
+var_freq_900$maf <- var_freq_900 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
+# load depth data
+var_depth_900 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_900.vcf.ldepth.mean", col.names = c("chr", "pos", "mean_depth", "var_depth"), skip = 1)
+ind_depth_900 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_900.vcf.idepth", col_names = c("ind", "nsites", "depth"), skip = 1)
+# load missingness data
+var_miss_900 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_900.vcf.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
+ind_miss_900 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_900.vcf.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
+
+################################################################################
+################################################################################
+# load quality data
+var_qual_942 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_942.vcf.lqual", col.names = c("chr", "pos", "qual"), skip = 1)
+# load maf data
+var_freq_942 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_942.vcf.frq", col_names = c("chr", "pos", "nalleles", "nchr", "a1", "a2"), skip = 1)
+var_freq_942$a2 <- as.numeric(var_freq_942$a2)
+var_freq_942$maf <- var_freq_942 %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
+# load depth data
+var_depth_942 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_942.vcf.ldepth.mean", col.names = c("chr", "pos", "mean_depth", "var_depth"), skip = 1)
+ind_depth_942 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_942.vcf.idepth", col_names = c("ind", "nsites", "depth"), skip = 1)
+# load missingness data
+var_miss_942 <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_942.vcf.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
+ind_miss_942 <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/EUR_T_942.vcf.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
+
+################################################################################
+################################################################################
+# load quality data
+var_qual_USA <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/USA_T_GA.vcf.lqual", col.names = c("chr", "pos", "qual"), skip = 1)
+# load maf data
+var_freq_USA <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/USA_T_GA.vcf.frq", col_names = c("chr", "pos", "nalleles", "nchr", "a1", "a2"), skip = 1)
+var_freq_USA$a2 <- as.numeric(var_freq_USA$a2)
+var_freq_USA$maf <- var_freq_USA %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
+# load depth data
+var_depth_USA <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/USA_T_GA.vcf.ldepth.mean", col.names = c("chr", "pos", "mean_depth", "var_depth"), skip = 1)
+ind_depth_USA <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/USA_T_GA.vcf.idepth", col_names = c("ind", "nsites", "depth"), skip = 1)
+# load missingness data
+var_miss_USA <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/USA_T_GA.vcf.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
+ind_miss_USA <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/USA_T_GA.vcf.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
+
+################################################################################
+################################################################################
+# load quality data
+var_qual_CHN <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/CHN_T_GU.vcf.lqual", col.names = c("chr", "pos", "qual"), skip = 1)
+# load maf data
+var_freq_CHN <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/CHN_T_GU.vcf.frq", col_names = c("chr", "pos", "nalleles", "nchr", "a1", "a2"), skip = 1)
+var_freq_CHN$a2 <- as.numeric(var_freq_CHN$a2)
+var_freq_CHN$maf <- var_freq_CHN %>% dplyr::select(a1, a2) %>% apply(1, function(z) min(z))
+# load depth data
+var_depth_CHN <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/CHN_T_GU.vcf.ldepth.mean", col.names = c("chr", "pos", "mean_depth", "var_depth"), skip = 1)
+ind_depth_CHN <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/CHN_T_GU.vcf.idepth", col_names = c("ind", "nsites", "depth"), skip = 1)
+# load missingness data
+var_miss_CHN <- read.delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/CHN_T_GU.vcf.lmiss", col.names = c("chr", "pos", "nchr", "nfiltered", "nmiss", "fmiss"), skip = 1)
+ind_miss_CHN <- read_delim("~/Documents/Github/Crypto/Genome_Analysis/results/vcftools/CHN_T_GU.vcf.imiss", col_names = c("ind", "ndata", "nfiltered", "nmiss", "fmiss"), skip = 1)
+
+a <- ggplot() + theme_light() + xlim(0,1000) +
+  geom_density(data = var_qual_866, aes(qual, fill = "866"), colour = "black", alpha = 0.5) + 
+  geom_density(data = var_qual_900, aes(qual, fill = "900"), colour = "black", alpha = 0.5) +
+  geom_density(data = var_qual_942, aes(qual, fill = "942"), colour = "black", alpha = 0.5) +
+  geom_density(data = var_qual_USA, aes(qual, fill = "USA"), colour = "black", alpha = 0.5) +
+  geom_density(data = var_qual_CHN, aes(qual, fill = "CHN"), colour = "black", alpha = 0.5) +
+  scale_fill_manual(name = "Sample", breaks = c("866", "900", "942", "USA", "CHN"),
+                    values = c("866" = "yellow", "900" = "pink", "942" = "red", "USA" = "purple", "CHN" = "blue"))
+
+b <- ggplot() + theme_light() + xlim(-1,1) +
+  geom_density(data = var_freq_866, aes(maf, fill = "866"), colour = "black", alpha = 0.5) + 
+  geom_density(data = var_freq_900, aes(maf, fill = "900"), colour = "black", alpha = 0.5) +
+  geom_density(data = var_freq_942, aes(maf, fill = "942"), colour = "black", alpha = 0.5) +
+  geom_density(data = var_freq_USA, aes(maf, fill = "USA"), colour = "black", alpha = 0.5) +
+  geom_density(data = var_freq_CHN, aes(maf, fill = "CHN"), colour = "black", alpha = 0.5) +
+  scale_fill_manual(name = "Sample", breaks = c("866", "900", "942", "USA", "CHN"),
+                    values = c("866" = "yellow", "900" = "pink", "942" = "red", "USA" = "purple", "CHN" = "blue"))
+
+c <- ggplot() + theme_light() + xlim(0,100) +
+  geom_density(data = var_depth_866, aes(mean_depth, fill = "866"), colour = "black", alpha = 0.3) + 
+  geom_density(data = var_depth_900, aes(mean_depth, fill = "900"), colour = "black", alpha = 0.3) +
+  geom_density(data = var_depth_942, aes(mean_depth, fill = "942"), colour = "black", alpha = 0.3) +
+  geom_density(data = var_depth_USA, aes(mean_depth, fill = "USA"), colour = "black", alpha = 0.3) +
+  geom_density(data = var_depth_CHN, aes(mean_depth, fill = "CHN"), colour = "black", alpha = 0.3) +
+  scale_fill_manual(name = "Sample", breaks = c("866", "900", "942", "USA", "CHN"),
+                    values = c("866" = "yellow", "900" = "pink", "942" = "red", "USA" = "purple", "CHN" = "blue"))
+
+d <- ggplot() + theme_light() +
+  geom_histogram(data = ind_depth_866, aes(depth, fill = "866"), colour = "black", alpha = 1) + 
+  geom_histogram(data = ind_depth_900, aes(depth, fill = "900"), colour = "black", alpha = 1) +
+  geom_histogram(data = ind_depth_942, aes(depth, fill = "942"), colour = "black", alpha = 1) +
+  geom_histogram(data = ind_depth_USA, aes(depth, fill = "USA"), colour = "black", alpha = 1) +
+  geom_histogram(data = ind_depth_CHN, aes(depth, fill = "CHN"), colour = "black", alpha = 1) +
+  scale_fill_manual(name = "Sample", breaks = c("866", "900", "942", "USA", "CHN"),
+                    values = c("866" = "yellow", "900" = "pink", "942" = "red", "USA" = "purple", "CHN" = "blue"))
+
+e <- ggplot() + theme_light() + xlim(-1,1) +
+  geom_density(data = var_miss_866, aes(fmiss, fill = "866"), colour = "black", alpha = 1) + 
+  geom_density(data = var_miss_900, aes(fmiss, fill = "900"), colour = "black", alpha = 1) +
+  geom_density(data = var_miss_942, aes(fmiss, fill = "942"), colour = "black", alpha = 1) +
+  geom_density(data = var_miss_USA, aes(fmiss, fill = "USA"), colour = "black", alpha = 1) +
+  geom_density(data = var_miss_CHN, aes(fmiss, fill = "CHN"), colour = "black", alpha = 1) +
+  scale_fill_manual(name = "Sample", breaks = c("866", "900", "942", "USA", "CHN"),
+                    values = c("866" = "yellow", "900" = "pink", "942" = "red", "USA" = "purple", "CHN" = "blue"))
+e
+f <- ggplot() + theme_light() + xlim(-1,1) +
+  geom_histogram(data = ind_miss_866, aes(fmiss, fill = "866"), colour = "black", alpha = 0.3) + 
+  geom_histogram(data = ind_miss_900, aes(fmiss, fill = "900"), colour = "black", alpha = 0.3) +
+  geom_histogram(data = ind_miss_942, aes(fmiss, fill = "942"), colour = "black", alpha = 0.3) +
+  geom_histogram(data = ind_miss_USA, aes(fmiss, fill = "USA"), colour = "black", alpha = 0.3) +
+  geom_histogram(data = ind_miss_CHN, aes(fmiss, fill = "CHN"), colour = "black", alpha = 0.3) +
+  scale_fill_manual(name = "Sample", breaks = c("866", "900", "942", "USA", "CHN"),
+                    values = c("866" = "yellow", "900" = "pink", "942" = "red", "USA" = "purple", "CHN" = "blue"))
+f
+
+Ctyz_Stats <- ggarrange(a,c,d,ncol = 3, nrow = 2, 
+                  labels = c('Variant Quality', #'Minor Allele Frequency', 
+                  'Variant Mean Depth',
+                  'Mean Depth per individual'), 
+                  #'Variant Missingness', 
+                  #'Missing data per individual',
+                  font.label = c(size = 10), common.legend = T) 
+
+annotate_figure(Ctyz_Stats, top = text_grob("Ctyzzeri Statistics", color = "black", face = "bold", size = 14))
+
+```
