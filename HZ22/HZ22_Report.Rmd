@@ -1,0 +1,506 @@
+---
+title: "HZ22_Analysis"
+author: "Finn Lobnow"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libs, include = TRUE, echo = F, message=F}
+library(tidyverse)
+library(knitr)
+library(ggpubr)
+library(readr)
+library(tibble)
+library(leaflet)
+library(htmltools)
+library(data.table)
+library(scales)
+library(RColorBrewer)
+library(cowplot)
+library(ggpubr)
+```
+
+``` {r cols-and-colors, echo = F, warning = F, message = F}
+basics          <- c("Mouse_ID", "Address", "Sex", "Longitude", 
+                     "Latitude", "Year", "HI", "HI_NLoci")
+dissection.cols <- c("Body_Weight", "Body_Length", "Tail_Length", "Status", "Spleen", 
+                     "Left_Testis", "Right_Testis", "Seminal_Vesicles_Weight", "Liver",
+                     "Sperm", "Left_Epididymis", "Right_Epididymis", 
+                     "Right_Ovarium_Weight", "Left_Ovarium_Weight",
+                     "Left_Embryo", "Right_Embryo", "Fleas", "Ticks", "Ectoparasites_Logical", 
+                     "Arrival", "Dissection_Date", "Trap_Date", "Host")
+EqPCR.cols      <- c("delta_ct_ilwe_MminusE", "delta_ct_cewe_MminusE", 
+                      "MC.Eimeria", "Ct.Eimeria", "Ct.Mus", "FEC_Eim_Ct", "MC.Eimeria.FEC",
+                     "OPG", "Feces_weight", "Tm1", "Tm2", "Tm3", "Tm4")
+CqPCR.cols      <- c("ILWE_Crypto_Ct", "FEC_Crypto_Ct", "Oocyst_Predict_Crypto",
+                      "Oocyst_Predict_Crypto_FEC", "FEC_DNA_Content_ng.microliter",
+                     "ILWE_DNA_Content_ng.microliter", "Feces_weight_Extraction")
+
+################################################################################
+# color palette for HI #########################################################
+################################################################################
+r <- c(0,    64, 128, 179, 217, 255)
+g <- c(0,    12,  25,  25,  12,   0)
+b <- c(255, 249, 243, 191,  95,   0)
+
+beach <- function (n, name = c("beach.colors")) 
+  {
+    beach.colors = rgb(r,g,b,maxColorValue = 255)
+    name = match.arg(name)
+    orig = eval(parse(text = name))
+    rgb = t(col2rgb(orig))
+    temp = matrix(NA, ncol = 3, nrow = n)
+    x = seq(0, 1, , length(orig))
+    xg = seq(0, 1, , n)
+    for (k in 1:3) {
+      hold = spline(x, rgb[, k], n = n)$y
+      hold[hold < 0] = 0
+      hold[hold > 255] = 255
+      temp[, k] = round(hold)
+    }
+    palette = rgb(temp[, 1], temp[, 2], temp[, 3], maxColorValue = 255)
+    palette
+}
+```
+
+``` {r data, echo = F, warning = F, message = F}
+# load SOTA data product
+SOTA <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/SOTA_Data_Product.csv", na.strings = c("", " ", "NA"))  %>% filter(!is.na(Latitude), !is.na(Longitude), !is.na(HI), !Mouse_ID %in% c("SK_2697", "SK_3173", "SK_905"))
+SOTA <- SOTA[colnames(SOTA) %in% c(basics, CqPCR.cols, EqPCR.cols)]
+SOTA$HI <- round(SOTA$HI, 2)
+
+# load Standard Curve for oocyst prediction based on Cryptosporidium qPCR Ct values
+Standard_Curve <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_input/Cryptosporidium/Crypto_Standard_Curve.csv", na.strings = c("", " ", "NA"))
+
+# load Cryptosporidium ILWE data (HZ16 - HZ21)
+ILWE_CqPCR <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/Crypto_Detection.csv", na.strings = c("", " ", "NA"))  %>% filter(!is.na(Latitude), !is.na(Longitude))
+ILWE_CqPCR  <- ILWE_CqPCR[colnames(ILWE_CqPCR) %in% c(basics, CqPCR.cols)]
+ILWE_CqPCR$ILWE_Crypto_Ct <- round(ILWE_CqPCR$ILWE_Crypto_Ct, 2)
+ILWE_CqPCR$HI <- round(ILWE_CqPCR$HI, 2)
+
+
+# load Cryptosporidium FEC qPCR data (HZ22)
+FEC_CqPCR    <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_input/FEC_CqPCR_input_data.csv")
+FEC_CqPCR$Year <- 2022
+FEC_CqPCR$FEC_Crypto_Ct <- round(FEC_CqPCR$FEC_Crypto_Ct, 2)
+FEC_CqPCR    <- FEC_CqPCR[colnames(FEC_CqPCR) %in% c("Mouse_ID", "FEC_Crypto_Ct", "FEC_Crypto_Ct1",
+                                                     "FEC_Crypto_Ct2", "FEC_Crypto_Ct3", "Task", "Year")]
+
+# load Eimeria FEC qPCR data (HZ22)
+FEC_EqPCR    <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_input/FEC_EqPCR_input_data.csv") %>% filter(Task == "UNKNOWN")
+FEC_EqPCR$Mouse_ID <- gsub("AA_0822.2", "AA_0822", FEC_EqPCR$Mouse_ID)
+FEC_EqPCR$MC.Eimeria.FEC <- if_else(between(FEC_EqPCR$Tm1,73.5,76), TRUE, FALSE)
+FEC_EqPCR <- FEC_EqPCR[colnames(FEC_EqPCR) %in% c("Mouse_ID", "FEC_Eim_Ct", 
+                                                  "FEC_Eim_Ct1", "FEC_Eim_Ct2", "FEC_Eim_Ct3", 
+                                                  "Task", "Tm1", "Tm2", "Tm3", "Tm4")]
+
+# load Eimeria CEWE qPCR data from Josi
+CEWE_EqPCR   <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_products/CEWE_FECES_infection_intensities")
+
+# load trapping data of HZ22
+traps_22 <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_input/Mouse_data/HZ22_Trap.csv", na.strings = c("", " ", "NA"))
+#traps_22 <- traps_22[colnames(traps_22) %in% c(basics)]
+traps_22$Latitude <- gsub("52..694509", "52.694509", traps_22$Latitude)
+traps_22$Latitude <- gsub("52..732856", "52.732856", traps_22$Latitude)
+traps_22$Latitude <- as.numeric(traps_22$Latitude)
+
+#weights_22 <- read.csv("https://raw.githubusercontent.com/tlobnow/Crypto/main/HZ22/HZ22_FEC_qPCR.csv", na.strings = c("", " ", "NA"))
+weights_22 <- read.csv("~/Documents/Github/Crypto/HZ22/HZ22_FEC_qPCR.csv", na.strings = c("", " ", "NA"))
+weights_22 <- weights_22[,c(1:7, 10)]
+weights_22 <- weights_22 %>% filter(!is.na(Extraction_Date))
+
+# load dissection data of HZ22
+diss_22  <- read.csv("https://raw.githubusercontent.com/derele/Mouse_Eimeria_Field/master/data_input/Mouse_data/HZ22_Dissections.csv", na.strings = c("", " ", "NA"))
+#diss_22 <- diss_22[colnames(diss_22) %in% basics]
+diss_22$Mouse_ID <- gsub(" A", "", diss_22$Mouse_ID)
+diss_22$Mouse_ID <- gsub(" B", "", diss_22$Mouse_ID)
+diss_22$Mouse_ID <- gsub(" C", "", diss_22$Mouse_ID)
+diss_22$Mouse_ID <- gsub(" D", "", diss_22$Mouse_ID)
+diss_22$Mouse_ID <- gsub(" E", "", diss_22$Mouse_ID)
+diss_22$Mouse_ID <- gsub(" F", "", diss_22$Mouse_ID)
+diss_22$Mouse_ID <- gsub(" G", "", diss_22$Mouse_ID)
+diss_22$Mouse_ID <- gsub(" H", "", diss_22$Mouse_ID)
+diss_22$Mouse_ID <- gsub(" I", "", diss_22$Mouse_ID)
+diss_22$Mouse_ID <- gsub(" J", "", diss_22$Mouse_ID)
+```
+
+``` {r joins-of-data, echo=F, warning=F, message=F}
+EqPCR <- full_join(CEWE_EqPCR, FEC_EqPCR)
+CqPCR <- full_join(ILWE_CqPCR, FEC_CqPCR)
+qPCR  <- full_join(EqPCR,CqPCR)
+qPCR  <- full_join(qPCR, SOTA)
+
+# join trapping / dissection data with qPCR results of HZ22
+mouse_data <- full_join(diss_22[colnames(diss_22) %in% basics], traps_22[colnames(traps_22) %in% basics])
+mouse_data <- full_join(mouse_data, weights_22)
+qPCR <- full_join(mouse_data, qPCR)
+
+# fill partial duplicate rows and eliminate resulting full duplicates
+qPCR <- qPCR %>% arrange(Mouse_ID) %>% group_by(Mouse_ID) %>% 
+  fill(c(everything()), .direction = "downup") %>% 
+  ungroup() %>% distinct(Mouse_ID, .keep_all = T) 
+
+# remove samples that are missing longitude/latitude
+qPCR <- qPCR %>% filter(!is.na(Longitude), !is.na(Latitude))
+
+# select BR-HZ samples
+qPCR <- qPCR[qPCR$Mouse_ID %like% c("AA_","ZZ_", "CB_"), ]
+```
+
+### Oocyst Prediction
+
+``` {r oocyst-prediction, echo=F, message=F, warning=F}
+# Oocyst Prediction
+colnames(Standard_Curve)[colnames(Standard_Curve)%in%"Ct_mean"] <- "FEC_Crypto_Ct"
+Standard_Curve            <-  filter(Standard_Curve, FEC_Crypto_Ct > 0)
+linear_model0             <- lm(log2(Amount_Oocysts) ~ FEC_Crypto_Ct, data = Standard_Curve)
+Oocyst_Predict_Crypto_FEC <- 2^predict(linear_model0, newdata = qPCR)
+qPCR <- data.frame(qPCR, Oocyst_Predict_Crypto_FEC)
+qPCR <- qPCR %>% mutate(Oocyst_Predict_Crypto_FEC = replace(Oocyst_Predict_Crypto_FEC, Oocyst_Predict_Crypto_FEC == "4292821751815.77", "0"))
+qPCR$Oocyst_Predict_Crypto_FEC <- as.integer(qPCR$Oocyst_Predict_Crypto_FEC)
+```
+
+### Eimeria Data
+
+- FEC  --> Ct value and melting curve (correct melting curve between 73.5 and 76 degrees Celsius indicates correct amplification product)
+- CEWE --> Ct of host minus parasite determines infection intensity
+
+The plot shows a histogram of melting temperature Tm1 and the thresholds for filtering real infections.
+
+``` {r plot-MC, echo=F, warning=F, message=F}
+ggplot(data=qPCR,aes(x=Tm1,y=stat(density)))+
+  geom_histogram(binwidth=0.1,fill="black")+
+  geom_density(col="red")+
+  geom_vline(xintercept =74.5,col="green",size=1)+
+  geom_vline(xintercept=76,col="green",size=1)+
+  labs(title= NULL,subtitle="a",x="Tm1 in °C",y="Density")+
+  theme(plot.title=element_text(hjust=0.0))+
+  theme(axis.text.x=element_text(size=8))+
+  theme(panel.background=element_rect(fill="gray95",color="gray40"))+
+  scale_x_continuous(breaks=seq(62,93,1.0))
+```
+
+The column MC.Eimeria.FEC will be added to reveal real infections
+
+``` {r add-MC.Eimeria, echo=F, warning=F, message=F}
+
+
+
+
+qPCR$MC.Eimeria.FEC <- if_else(between(qPCR$Tm1,73.5,76), TRUE, FALSE)
+
+# we may want to talk about this concept.. 
+# especially if there's a second (maybe even third) Tm is also present, 
+# this doesn't seem completely valid
+```
+
+
+``` {r data-manipulation, echo=F, message=F, warning=F}
+# add OPG calculation for Crypto-infected samples
+qPCR <- qPCR %>% mutate(OPG.FEC = Oocyst_Predict_Crypto_FEC/Feces_weight_Extraction)
+
+# add infection status (Cryp/Eim) based on qPCR results
+qPCR <- qPCR %>% mutate(infection.status = case_when(
+  # samples that are ONLY Crypto-infected:
+    # Crypto ILWE or FEC qPCR was positive and trustworthy (Ct<35)
+    # Eimeria FEC or CEWE qPCR was negative and the 
+    # Eimeria Melting Curve analysis does not indicate a trustworthy product size (73.5 < Tm1 < 76)
+  ((FEC_Crypto_Ct < 35 & FEC_Crypto_Ct > 0) | ((ILWE_Crypto_Ct < 35 & ILWE_Crypto_Ct > 0))) & 
+    (MC.Eimeria.FEC == F | MC.Eimeria == F | 
+       (is.na(MC.Eimeria.FEC) & FEC_Eim_Ct == 0 & FEC_Eim_Ct > 35) | 
+       (is.na(MC.Eimeria.FEC) & OPG == 0)) ~ "Crypto (+)",
+  
+  # samples that are ONLY Eimeria-infected:
+    # Crypto ILWE or FEC qPCR was negative or not trustworthy (Ct>35)
+    # Eimeria FEC or CEWE qPCR was positive and the 
+    # Eimeria Melting Curve analysis indicates a trustworthy product size (73.5 < Tm1 < 76)
+  ((FEC_Crypto_Ct > 35 | FEC_Crypto_Ct == 0) | (ILWE_Crypto_Ct > 35 | ILWE_Crypto_Ct == 0)) &
+    (MC.Eimeria.FEC == T | MC.Eimeria == T) |
+    ((is.na(MC.Eimeria.FEC) & OPG > 0)) ~ "Eimeria (+)",
+  
+  # samples that are COINFECTED: Crypto positive, Eimeria positive
+  ((FEC_Crypto_Ct < 35 & FEC_Crypto_Ct > 0) | ((ILWE_Crypto_Ct < 35 & ILWE_Crypto_Ct > 0)) & 
+    (MC.Eimeria.FEC == T | MC.Eimeria == T) ~ "Crypto and Eimeria (++)"),
+  
+  # samples that are UNINFECTED for Crypto and Eimeria (other infections cannot be ruled out, of course):
+   # Crypto negative
+   # Eimeria negative
+  (FEC_Crypto_Ct > 35 | FEC_Crypto_Ct == 0 | ILWE_Crypto_Ct > 35 | ILWE_Crypto_Ct == 0) &
+    (MC.Eimeria.FEC == F | MC.Eimeria == F)  ~ "Uninfected (--)",
+  
+  # samples that tested positive for Crypto, but remain untested for Eimeria
+  # but we cannot confirm double-/ or single-infection
+  (((FEC_Crypto_Ct < 35 | FEC_Crypto_Ct > 0) | ILWE_Crypto_Ct > 0) & 
+    (is.na(MC.Eimeria.FEC) & is.na(MC.Eimeria))) ~ "Crypto (+) (Eimeria Untested)",
+  
+  # samples that tested negative for Crypto, but remain untested for Eimeria
+  (((FEC_Crypto_Ct > 35 | FEC_Crypto_Ct == 0) | ILWE_Crypto_Ct == 0) & 
+    (is.na(MC.Eimeria.FEC) & is.na(MC.Eimeria))) ~ "Crypto (-) (Eimeria Untested)",
+  
+  # samples that tested positive for Eimeria, but remain untested for Crypto
+  # but we cannot confirm double-/ or single-infection
+  (is.na(FEC_Crypto_Ct) & is.na(ILWE_Crypto_Ct)) &
+    (MC.Eimeria.FEC == T | MC.Eimeria == T) ~ "Eimeria (+) (Crypto Untested)",
+  
+  # samples that tested negative for Crypto, but remain untested for Eimeria
+  (is.na(FEC_Crypto_Ct) & is.na(ILWE_Crypto_Ct)) &
+    (MC.Eimeria.FEC == F | MC.Eimeria == F) ~ "Eimeria (-) (Crypto Untested)",
+  
+  # UNTESTED samples (probably ILWE/FEC/CEWE was not found, extraction failed, other issues..)
+  (is.na(FEC_Crypto_Ct) & is.na(ILWE_Crypto_Ct)) & (is.na(MC.Eimeria.FEC) & is.na(MC.Eimeria)) ~ "Untested"))
+
+  
+Crypto_only    <- qPCR %>% filter(infection.status == "Crypto (+)")
+Eimeria_only   <- qPCR %>% filter(infection.status == "Eimeria (+)")
+Crypto_Eimeria <- qPCR %>% filter(infection.status == "Crypto and Eimeria (++)")
+Uninfected     <- qPCR %>% filter(infection.status == "Uninfected (--)")
+Untested       <- qPCR %>% filter(infection.status == "Untested")
+Crypto_sgl     <- qPCR %>% filter(infection.status == "Crypto (+) (Eimeria Untested)")
+Eimeria_sgl    <- qPCR %>% filter(infection.status == "Eimeria (+) (Crypto Untested)")
+Crypto_general <- qPCR %>% filter(infection.status %in% c("Crypto (+)", 
+                                                          "Crypto (+) (Eimeria Untested)", 
+                                                          "Crypto and Eimeria (++)"))
+Eimeria_general <- qPCR %>% filter(infection.status %in% c("Eimeria (+)",
+                                                           "Eimeria (+) (Eimeria Untested)",
+                                                           "Crypto and Eimeria (++)"))
+
+
+# samples that were sequenced by Kvac, Yasmin, or me
+  # Sequenced <- SOTA %>% mutate(seq = Mouse_ID %in% c("AA_0144", "AA_0325", "AA_0689", "AA_0209", "AA_0282", "AA_0793", "AA_0667", "AA_0805", "AA_0900", "AA_0523", "AA_0534", "AA_0537", "AA_0545", "AA_0546", "AA_0553", "AA_0554", "AA_0555", "AA_0557", "AA_0559", "AA_0571", "AA_0578", "AA_0580", "AA_0589", "AA_0601", "AA_0660", "AA_0666", "AA_0585", "AA_0667", "AA_0669", "AA_0679")) %>% filter(seq == T)
+  
+# We will focus our attention to HZ22 for mapping
+analysis <- qPCR %>% filter(Year == 2022)
+analysis <- analysis[colnames(analysis) %in% c(basics, EqPCR.cols, CqPCR.cols, 
+                                               "Feces_weight_Extraction", "Extraction_Date",
+                                               "infection.status", "OPG.FEC")]
+
+Crypto_only_22    <- analysis %>% filter(infection.status == "Crypto (+)")
+Eimeria_only_22   <- analysis %>% filter(infection.status == "Eimeria (+)")
+Crypto_Eimeria_22 <- analysis %>% filter(infection.status == "Crypto and Eimeria (++)")
+Uninfected_22     <- analysis %>% filter(infection.status == "Uninfected (--)")
+Untested_22       <- analysis %>% filter(infection.status == "Untested")
+Crypto_sgl_22     <- analysis %>% filter(infection.status == "Crypto (+) (Eimeria Untested)")
+Eimeria_sgl_22    <- analysis %>% filter(infection.status == "Eimeria (+) (Crypto Untested)")
+Crypto_general_22 <- analysis %>% filter(infection.status %in% c("Crypto (+)", 
+                                                          "Crypto (+) (Eimeria Untested)", 
+                                                          "Crypto and Eimeria (++)"))
+Eimeria_general_22 <- analysis %>% filter(infection.status %in% c("Eimeria (+)",
+                                                           "Eimeria (+) (Eimeria Untested)",
+                                                           "Crypto and Eimeria (++)"))
+```
+
+``` {r map-HZ, echo=F, message=F, warning=F}
+SOTA$HI_Level <-  cut(SOTA$HI, c(0, 0.001, 0.250, 0.500, 0.750, 1), 
+                      include.lowest = T , 
+                      labels = c('HI = 0', 'HI ≤ 0.25', 'HI ≤ 0.5', 'HI ≤ 0.75', 'HI ≤ 1'))
+data_col_HI_Level = colorFactor(beach(6), SOTA$HI_Level)
+data_col_HI       = colorFactor(beach(6), SOTA$HI)
+
+map <- qPCR %>% leaflet() %>% addProviderTiles("CartoDB") %>% setView(lat = 52.8484 , lng = 13.8464, zoom = 7.5)
+map1 <- map %>%
+  addPolylines(lat = c(55.0000, 53.6000, 53.51885, 52.8875  , 52.6053, 51.8978, 45.0000), 
+               lng = c(10.0000, 11.4563, 12.4464,13.8119 , 13.8756, 13.8103, 10.0000), 
+               color = "purple", 
+               weight = 55, 
+               opacity = 0.1) %>%
+  addCircleMarkers(data = SOTA,
+                   col = ~data_col_HI(HI),
+                   label = ~htmlEscape(Mouse_ID),
+                   popup = ~paste("<b>Mouse_ID:<b>",as.character(Mouse_ID), "<br>",
+                                  "<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude), "<br>",
+                                  "<b>HI:<b>",      as.character(round(HI, digits = 2)), "<br>",
+                                  "<b>Year:<b>",    as.character(Year),"<br>",
+                                  "<b>Ct Mean:<b>",      as.character(round(ILWE_Crypto_Ct, digits = 2)),"<br>",
+                                  "<b>Oocyst Prediction:<b>", as.character(Oocyst_Predict_Crypto), "<br>",
+                                  "<b>Sex:<b>", Sex, "<br>",
+                                  sep=" "),
+                   opacity = 1,
+                   radius = 3,
+                   group = "HZ Hybrid Index") %>%
+
+  addCircleMarkers(data = traps_22,
+                   color = '#73be73',
+                   label = ~htmlEscape(Address),
+                   popup = ~paste("<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude), "<br>",
+                                  sep=" "),
+                   opacity = 5,
+                   radius = 3,
+                   group = 'Trapping HZ22') %>%
+  addCircleMarkers(data = Crypto_only_22,
+                   color = '#8ED1FC',
+                   label = ~htmlEscape(Address),
+                   popup = ~paste("<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude), "<br>",
+                                  sep=" "),
+                   opacity = 5,
+                   radius = 3,
+                   group = 'Crypto (+) only') %>%
+  # addCircleMarkers(data = Crypto_general_22,
+  #                  color = '#8ED1FC',
+  #                  label = ~htmlEscape(Mouse_ID),
+  #                  popup = ~paste("<b>Mouse_ID:<b>",as.character(Mouse_ID), "<br>",
+  #                                 "<b>Address:<b>",as.character(Address), "<br>",
+  #                                 "<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude), "<br>",
+  #                                 sep=" "),
+  #                  opacity = 5,
+  #                  radius = 3,
+  #                  group = 'crypto_infected') %>%
+  addCircleMarkers(data = Eimeria_general_22,
+                   color = '#CD950C',
+                   label = ~htmlEscape(Mouse_ID),
+                   popup = ~paste("<b>Mouse_ID:<b>",as.character(Mouse_ID), "<br>",
+                                  "<b>Address:<b>",as.character(Address), "<br>",
+                                  "<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude), "<br>",
+                                  sep=" "),
+                   opacity = 5,
+                   radius = 3,
+                   group = 'Eimeria (+)') %>%
+  addCircleMarkers(data = Eimeria_only_22,
+                   color = 'orange',
+                   label = ~htmlEscape(Mouse_ID),
+                   popup = ~paste("<b>Mouse_ID:<b>",as.character(Mouse_ID), "<br>",
+                                  "<b>Address:<b>",as.character(Address), "<br>",
+                                  "<b>Location:<b>", as.character(Latitude), "<b>,<b>", as.character(Longitude), "<br>",
+                                  sep=" "),
+                   opacity = 5,
+                   radius = 3,
+                   group = 'Eimeria (+) only') %>%
+  addLegend("bottomright", 
+            colors = c('#8ED1FC', 'orange', "#73be73"),
+            labels = c('Crypto (+)',
+                       'Eimeria (+)',
+                       "Trapping HZ22"),
+            title = 'Host',
+            opacity = 1) %>%
+  addLegend("bottomleft", 
+            pal = data_col_HI_Level, 
+            title = "HI",
+            values = SOTA$HI_Level, 
+            group = c('HI = 0', 'HI ≤ 0.25', 'HI ≤ 0.5', 'HI ≤ 0.75', 'HI ≤ 1'),
+            opacity = 1) %>%
+  addLayersControl(baseGroups = c("Trapping HZ22", "Eimeria (+)", "HZ Hybrid Index"),
+                   overlayGroups = c(#"crypto_infected",  
+                                     "Crypto (+) only", "Eimeria (+) only"),
+                   options = layersControlOptions(collapsed = F))
+
+map1
+```
+
+### Preparation for London
+
+Here is a list of all Crypto-only infected samples from HZ22
+
+``` {r crypto-only, echo=F, message=F, warning=F}
+Crypto_only_22 <- Crypto_only_22 %>% select(Mouse_ID, Latitude, Longitude, Sex, FEC_Crypto_Ct, FEC_Eim_Ct, MC.Eimeria.FEC, Feces_weight_Extraction, Oocyst_Predict_Crypto_FEC, OPG.FEC) %>% arrange(FEC_Eim_Ct)
+kable(Crypto_only_22, align = c("cccccccccc"))
+#write.csv(Crypto_only_22, "~/Documents/Github/Crypto/HZ22/HZ22_CryptoOnlyLocations.csv")
+```
+
+``` {r usable-samples, echo=F, warning=F, message=F}
+Crypto_only_22 %>% ggplot(aes(FEC_Crypto_Ct, log2(OPG.FEC), label = Mouse_ID, col = log2(OPG.FEC))) +
+  geom_point() +
+  geom_label() +
+  ggtitle("OPG vs Ct")
+```
+
+``` {r packed, echo=F, message=F, warning=F}
+Crypto_only_22 <- Crypto_only_22 %>% mutate(packed.Crypto = 
+                                        ifelse(Mouse_ID %in% c("AA_1017", "AA_1022", "CB_005",  "CB_004", "AA_1027",
+                                                               "AA_1025", "AA_1023", "AA_1026", "CB_007",  "AA_1030",
+                                                               "AA_1042", "AA_0972"), T, F))
+
+packed <- Crypto_only_22 %>% filter(packed.Crypto == T)
+kable(packed, align = c("cccccccccc"))
+```
+
+
+``` {r Crypto-Detection-HZ1, echo=F, message=F, warning=F}
+qPCR %>% ggplot(aes(Year, fill = infection.status)) +
+  geom_bar(position='stack') +
+  scale_fill_brewer(palette = "Set3") +
+  theme_cowplot()
+
+inf.status.yr <- qPCR %>% group_by(Year, infection.status) %>% count() %>% filter(!is.na(Year))
+inf.status.yr <- inf.status.yr %>% pivot_wider(names_from = Year, values_from = n) %>% arrange(infection.status)
+kable(inf.status.yr)
+
+```
+
+
+``` {r Crypto-Detection-HZ2, echo=F, message=F, warning=F, include=F}
+HZ16 <- qPCR %>% filter(Year == 2016) %>% ggplot(aes(x="", y = infection.status, fill = infection.status)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Set3") +
+  coord_polar(theta = "y") +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  guides(fill = guide_legend(title = "")) +
+  ggtitle("HZ 2016 Infection Status")
+
+HZ17 <- qPCR %>% filter(Year == 2017) %>% ggplot(aes(x="", y = infection.status, fill = infection.status)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Set3") +
+  coord_polar(theta = "y") +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  guides(fill = guide_legend(title = "")) +
+  ggtitle("HZ 2017 Infection Status")
+
+HZ18 <- qPCR %>% filter(Year == 2018) %>% ggplot(aes(x="", y = infection.status, fill = infection.status)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Set3") +
+  coord_polar(theta = "y") +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  guides(fill = guide_legend(title = "")) +
+  ggtitle("HZ 2018 Infection Status")
+
+HZ19 <- qPCR %>% filter(Year == 2019) %>% ggplot(aes(x="", y = infection.status, fill = infection.status)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Set3") +
+  coord_polar(theta = "y") +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  guides(fill = guide_legend(title = "")) +
+  ggtitle("HZ 2019 Infection Status")
+
+HZ21 <- qPCR %>% filter(Year == 2021) %>% ggplot(aes(x="", y = infection.status, fill = infection.status)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Set3") +
+  coord_polar(theta = "y") +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  guides(fill = guide_legend(title = "")) +
+  ggtitle("HZ 2021 Infection Status")
+
+HZ22 <- qPCR %>% filter(Year == 2022) %>% ggplot(aes(x="", y = infection.status, fill = infection.status)) +
+  geom_col() +
+  scale_fill_brewer(palette = "Set3") +
+  coord_polar(theta = "y") +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank()) +
+  guides(fill = guide_legend(title = "")) +
+  ggtitle("HZ 2022 Infection Status")
+
+HZ16
+HZ17
+HZ18
+HZ19
+HZ21
+HZ22
+```
+
+
+
+
+
+
