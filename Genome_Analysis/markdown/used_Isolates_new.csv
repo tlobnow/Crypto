@@ -1,0 +1,29 @@
+No.,Abbr,Species,Accession,gp60_genotype,Host,Isolate,Location,Region,Region_Abbr,Kit,Year,Latitude,Longitude,Sateriale et al. (2019)
+1,EUR_T_866,C.tyzzeri,unpublished,IXb,Mus,AA_0866,Germany,Brandenburg,BR,Illumina,2022,52.9206,13.5558,F
+2,EUR_T_942,C.tyzzeri,unpublished,IXb,Mus,AA_0942,Germany,Brandenburg,BR,Illumina,2022,52.9576,13.2839,F
+3,USA_T_GA,C.tyzzeri,SRR5683558,IXb,Mus,UGA55,USA,Georgia,GA,Illumina MiSeq,2019,33.98008578,-83.40055695,T
+4,CHN_T_GU,C.tyzzeri,SRR16934713,IXa,Mus,TYGZ1,China,Guangdong,GU,Illumina HiSeq 2500,2021,23.36025099,113.3677406,F
+5,EUR_P_CZ2,C.parvum,SRR15694518,IIa,Human,Czech5,Czech Republic,Czech Republic,CZ,Illumina HiSeq 2500,2017,49.60718072,14.9993668,F
+6,EUR_P_CZ1,C.parvum,SRR15694519,IIa,Cattle,Czech3,Czech Republic,Czech Republic,CZ,Illumina HiSeq 2500,2017,49.60718072,14.9993668,F
+7,EUR_P_WL6,C.parvum,SRR6147945,IIa,Human,UKP6,United Kingdom,Wales,WL,Illumina HiSeq 2500,2013,51.47666816,-3.169396048,T
+8,CHN_P_GU1,C.parvum,SRR15694484,IId,Cattle,22973,China,Guangdong,GU,Illumina HiSeq 2500,2019,23.36025099,113.3677406,F
+9,CHN_P_GU2,C.parvum,SRR15694495,IId,Cattle,22972,China,Guangdong,GU,Illumina HiSeq 2500,2019,23.36025099,113.3677406,F
+10,CHN_P_GU3,C.parvum,SRR15694506,IId,Cattle,22971,China,Guangdong,GU,Illumina HiSeq 2500,2019,23.36025099,113.3677406,F
+11,CHN_P_SH2,C.parvum,SRR15694522,IId,Cattle,22600,China,Shanghai,SH,Illumina HiSeq 2500,2016,31.23930929,121.4726021,F
+12,USA_P_WI,C.parvum,SRR15694502,IIa,Cattle,NAMHS-861,USA,Wisconsin,WI,Illumina HiSeq 2500,2015,44.69938242,-89.58181518,F
+13,USA_H_ID,C.hominis,SRR1558150,Ib,Human,37999,USA,Twin Falls,ID,Illumina GAIIx,2015,42.59946287,-114.3553011,F
+14,UGA_H_KA1,C.hominis,SRR1015747,Ib,Human,TU502_2012,Uganda,Kampala,KA,Illumina MiSeq,2004,0.3664982461,32.55550913,F
+15,UGA_H_KA2,C.hominis,SRR1015748,Ib,Human,TU502_2012,Uganda,Kampala,KA,Illumina MiSeq,2004,0.3664982461,32.55550913,F
+16,EUR_H_WL1,C.hominis,SRR1015721,Ib,Human,UKH1,United Kingdom,Wales,WL,Illumina MiSeq,2012,51.61055436,-3.985158047,F
+17,EUR_H_WL2,C.hominis,SRR1015722,Ib,Human,UKH1,United Kingdom,Wales,WL,Illumina MiSeq,2012,51.61055436,-3.985158047,F
+18,EUR_H_WL3,C.hominis,SRR6131684,Ib,Human,UKH3,United Kingdom,Wales,WL,Illumina MiSeq,2012,51.61055436,-3.985158047,F
+19,AFR_H_GH1,C.hominis,SRR11843789,Id,Human,C16-10151-GH,Ghana,Ghana,GH,Illumina HiSeq 2500,2016,6.675348774,-1.571441874,F
+20,AFR_H_GH2,C.hominis,SRR11843790,Ie,Human,C16-10106-GH,Ghana,Ghana,GH,Illumina HiSeq 2500,2016,6.675348774,-1.571441874,F
+21,AFR_H_TZ1,C.hominis,SRR11843805,Ia,Human,C16-10166-TZ,Tanzania,Tanzania,TZ,Illumina HiSeq 2500,2017,-6.502023667,39.28519775,F
+22,AFR_H_TZ2,C.hominis,SRR11843798,Ib,Human,C16-20196-TZ,Tanzania,Tanzania,TZ,Illumina HiSeq 2500,2017,-6.502023667,39.28519775,F
+23,AFR_H_TZ3,C.hominis,SRR11843806,Id,Human,C16-10114-TZ,Tanzania,Tanzania,TZ,Illumina HiSeq 2500,2017,-6.502023667,39.28519775,F
+24,AFR_H_TZ4,C.hominis,SRR11843799,Ie,Human,C16-10212-TZ,Tanzania,Tanzania,TZ,Illumina HiSeq 2500,2017,-6.502023667,39.28519775,F
+25,MDG_H_1,C.hominis,SRR11843786,Ia,Human,C16-20233-MG,Madagascar,Madagascar,MDG,Illumina HiSeq 2500,2017,-18.89956615,47.54648128,F
+26,MDG_H_2,C.hominis,SRR11843787,Ia,Human,C16-10062-MG,Madagascar,Madagascar,MDG,Illumina HiSeq 2500,2017,-18.89956615,47.54648128,F
+27,MDG_H_3,C.hominis,SRR11843788,Ib,Human,C16-10053-MG,Madagascar,Madagascar,MDG,Illumina HiSeq 2500,2017,-18.89956615,47.54648128,F
+28,NZL_H,C.hominis,SRR14089464,Ib,Human,TKD,New Zealand,Auckland,AUC,Illumina,2021,-36.67517599,174.7001438,F
